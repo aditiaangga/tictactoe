@@ -455,6 +455,49 @@
     .score-item.o-score .value { color: var(--pink); }
     .score-item.draw-score .value { color: var(--text-secondary); }
 
+    /* Name change highlight animation */
+    .score-item .label.name-changed {
+      animation: 0.8s ease-out;
+    }
+
+    .score-item.x-score .label.name-changed {
+      animation-name: nameGlowX;
+    }
+
+    .score-item.o-score .label.name-changed {
+      animation-name: nameGlowO;
+    }
+
+    @keyframes nameGlowX {
+      0% {
+        color: var(--text-secondary);
+        text-shadow: 0 0 0 transparent;
+      }
+      40% {
+        color: var(--cyan);
+        text-shadow: 0 0 20px var(--cyan-glow);
+      }
+      100% {
+        color: var(--text-secondary);
+        text-shadow: 0 0 0 transparent;
+      }
+    }
+
+    @keyframes nameGlowO {
+      0% {
+        color: var(--text-secondary);
+        text-shadow: 0 0 0 transparent;
+      }
+      40% {
+        color: var(--pink);
+        text-shadow: 0 0 20px var(--pink-glow);
+      }
+      100% {
+        color: var(--text-secondary);
+        text-shadow: 0 0 0 transparent;
+      }
+    }
+
     /* ===== TURN INDICATOR ===== */
     .turn-indicator {
       text-align: center;
@@ -717,6 +760,37 @@
     .names-content {
       max-width: 340px;
       text-align: left;
+      position: relative;
+    }
+
+    .names-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      font-family: var(--font);
+      z-index: 2;
+    }
+
+    .names-close:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text-primary);
+      transform: scale(1.15);
+    }
+
+    .names-close:active {
+      transform: scale(0.92);
     }
 
     .names-icon {
@@ -1083,6 +1157,7 @@
   <!-- NAMES MODAL -->
   <div class="modal-overlay" id="namesModal">
     <div class="modal-content names-content">
+      <button class="names-close" id="btnNamesClose" title="Close">✕</button>
       <div class="names-icon">✏️</div>
       <h2 id="namesTitle">Player Names</h2>
       <p class="names-sub" id="namesSub">Set your name before playing</p>
@@ -1482,10 +1557,28 @@
     }
 
     function handleStartGame() {
+      const oldX = state.playerNames.X;
+      const oldO = state.playerNames.O;
+
       state.playerNames.X = inputNameX.value.trim() || 'Player X';
       state.playerNames.O = inputNameO.value.trim() || 'Player O';
       savePlayerNames();
       updateScoreDisplay();
+
+      // Trigger highlight animation on changed names
+      if (state.playerNames.X !== oldX) {
+        nameLabelX.classList.remove('name-changed');
+        void nameLabelX.offsetWidth; // force reflow
+        nameLabelX.classList.add('name-changed');
+        setTimeout(() => nameLabelX.classList.remove('name-changed'), 800);
+      }
+      if (state.playerNames.O !== oldO) {
+        nameLabelO.classList.remove('name-changed');
+        void nameLabelO.offsetWidth; // force reflow
+        nameLabelO.classList.add('name-changed');
+        setTimeout(() => nameLabelO.classList.remove('name-changed'), 800);
+      }
+
       hideNamesModal();
       resetBoard();
     }
@@ -1726,7 +1819,6 @@
       state.scores = { X: 0, O: 0, draw: 0 };
       saveScores();
       updateScoreDisplay();
-      showNamesModal();
       resetBoard();
     }
 
@@ -1793,7 +1885,6 @@
       modeBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.mode === mode);
       });
-      showNamesModal();
       resetBoard();
     }
 
@@ -1995,10 +2086,11 @@
 
       // Names modal events
       btnStartGame.addEventListener('click', handleStartGame);
+      document.getElementById('btnNamesClose').addEventListener('click', hideNamesModal);
       inputNameX.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleStartGame(); });
       inputNameO.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleStartGame(); });
       namesModal.addEventListener('click', (e) => {
-        if (e.target === namesModal) handleStartGame();
+        if (e.target === namesModal) hideNamesModal();
       });
 
       // Load saved theme & apply
