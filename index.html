@@ -1,1695 +1,999 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tic-Tac-Toe · Futuristic</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic-Tac-Toe — Paper &amp; Ink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
-
-    /* ===== RESET & BASE ===== */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ===== DESIGN TOKENS ===== */
+    *, *::before, *::after { box-sizing: border-box; }
 
     :root {
-      --bg-primary: #0f0f1a;
-      --bg-secondary: #16162b;
-      --glass-bg: rgba(22, 22, 43, 0.65);
-      --glass-border: rgba(255, 255, 255, 0.06);
-      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      --gemini-blue: #4285F4;
-      --gemini-blue-glow: rgba(66, 133, 244, 0.35);
-      --gemini-purple: #8B5CF6;
-      --gemini-purple-glow: rgba(139, 92, 246, 0.35);
-      --gemini-pink: #d946ef;
-      --gemini-pink-glow: rgba(217, 70, 239, 0.35);
-      --cyan: var(--gemini-blue);
-      --cyan-glow: var(--gemini-blue-glow);
-      --pink: var(--gemini-pink);
-      --pink-glow: var(--gemini-pink-glow);
-      --purple: var(--gemini-purple);
-      --gradient-primary: linear-gradient(135deg, #4285F4, #8B5CF6, #d946ef);
-      --text-primary: #e8e8f0;
-      --text-secondary: #9898b0;
-      --radius: 20px;
-      --radius-sm: 14px;
-      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      --font: 'Google Sans', 'Inter', system-ui, -apple-system, sans-serif;
+      --f-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+      --f-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+
+      --fs-1: 12px;
+      --fs-2: 14px;
+      --fs-3: 18px;
+      --fs-4: 28px;
+      --fs-5: clamp(30px, 7.5vw, 56px);
+
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 24px;
+      --sp-6: 32px;
+      --sp-7: 48px;
+
+      --r: 2px;
+      --r2: 4px;
+
+      --d-1: 140ms;
+      --d-2: 220ms;
+      --d-3: 300ms;
+
+      --ease-out: cubic-bezier(.16, 1, .3, 1);
+      --ease-both: cubic-bezier(.65, 0, .35, 1);
+
+      --sh-1: 2px 2px 0 var(--shadow-hard);
+      --sh-2: 4px 4px 0 var(--shadow-hard);
     }
 
-    html, body {
-      height: 100%;
-      font-family: var(--font);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      overflow-x: hidden;
+    /* Theme 1 — Paper & Ink */
+    body[data-theme="kertas"] {
+      --surface: #EFE7D8;
+      --surface-2: #E4D9C5;
+      --ink: #1A1714;
+      --ink-soft: #5C5449;
+      --x: #1F5C63;
+      --o: #A6432C;
+      --focus: #A6432C;
+      --rule: rgba(26, 23, 20, .2);
+      --shadow-hard: #1A1714;
+      --scrim: rgba(26, 23, 20, .42);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
+      --grain-size: 140px 140px;
+      --grain-opacity: .07;
     }
+
+    /* Theme 2 — Wood */
+    body[data-theme="kayu"] {
+      --surface: #221A14;
+      --surface-2: #2E241B;
+      --ink: #F0E4D2;
+      --ink-soft: #A08E77;
+      --x: #6FA8A0;
+      --o: #D98A4B;
+      --focus: #D98A4B;
+      --rule: rgba(240, 228, 210, .16);
+      --shadow-hard: #0E0A07;
+      --scrim: rgba(10, 7, 4, .58);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+      --grain-size: 220px 220px;
+      --grain-opacity: .1;
+    }
+
+    /* Theme 3 — Chalk */
+    body[data-theme="kapur"] {
+      --surface: #1E2A24;
+      --surface-2: #27352D;
+      --ink: #EAE6DC;
+      --ink-soft: #93A096;
+      --x: #7FD1C0;
+      --o: #F0A868;
+      --focus: #F0A868;
+      --rule: rgba(234, 230, 220, .16);
+      --shadow-hard: #0B100D;
+      --scrim: rgba(6, 10, 8, .58);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.35' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+      --grain-size: 180px 180px;
+      --grain-opacity: .08;
+    }
+
+    /* ===== BASE ===== */
+    html { -webkit-text-size-adjust: 100%; }
 
     body {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      min-height: 100vh;
-      min-height: 100dvh;
-      padding-top: max(24px, env(safe-area-inset-top, 0px));
-      padding-bottom: 24px;
-      background:
-        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(66, 133, 244, 0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse 70% 50% at 90% 80%, rgba(217, 70, 239, 0.06) 0%, transparent 60%),
-        var(--bg-primary);
-    }
-
-    /* ===== GLASS PANEL ===== */
-    .container {
-      width: 100%;
-      max-width: 520px;
-      padding: 20px;
-      margin: 12px auto;
-    }
-
-    .glass-panel {
-      background: var(--glass-bg);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      box-shadow: var(--glass-shadow);
-      padding: 28px 24px;
-      transition: var(--transition);
-    }
-
-    /* ===== HEADER ===== */
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-
-    /* Gemini Spark Icon — 4 circles forming a diamond star */
-    .gemini-spark {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      flex-shrink: 0;
-    }
-
-    .gemini-spark .dot {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      animation: sparkFloat 3s ease-in-out infinite;
-    }
-
-    .gemini-spark .dot:nth-child(1) {
-      top: 0;
-      left: 0;
-      background: #4285F4;
-      box-shadow: 0 0 12px rgba(66, 133, 244, 0.6);
-      animation-delay: 0s;
-    }
-    .gemini-spark .dot:nth-child(2) {
-      top: 0;
-      right: 0;
-      background: #8B5CF6;
-      box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
-      animation-delay: 0.15s;
-    }
-    .gemini-spark .dot:nth-child(3) {
-      bottom: 0;
-      left: 0;
-      background: #d946ef;
-      box-shadow: 0 0 12px rgba(217, 70, 239, 0.6);
-      animation-delay: 0.3s;
-    }
-    .gemini-spark .dot:nth-child(4) {
-      bottom: 0;
-      right: 0;
-      background: #4285F4;
-      box-shadow: 0 0 12px rgba(66, 133, 244, 0.6);
-      animation-delay: 0.45s;
-    }
-
-    /* Center dot for the star */
-    .gemini-spark .center-dot {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #8B5CF6;
-      box-shadow: 0 0 16px rgba(139, 92, 246, 0.8);
-      animation: sparkPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes sparkFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    @keyframes sparkPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-      50% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
-    }
-
-    .header-text {
-      text-align: left;
-    }
-
-    .header-text h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      background: var(--gradient-primary);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: gradientFlow 4s ease-in-out infinite;
-      position: relative;
-      display: inline-block;
       margin: 0;
-      line-height: 1.2;
+      min-height: 100dvh;
+      background-color: var(--surface);
+      color: var(--ink);
+      font-family: var(--f-mono);
+      font-size: var(--fs-2);
+      line-height: 1.55;
+      touch-action: manipulation;
+      transition: background-color var(--d-3) var(--ease-both), color var(--d-3) var(--ease-both);
     }
 
-    @keyframes gradientFlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .header-text .subtitle {
-      color: var(--text-secondary);
-      font-size: 0.75rem;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 500;
-      margin-top: 2px;
-      display: block;
-    }
-
-
-
-    /* ===== THEMES (body classes override :root vars) ===== */
-
-    /* Gemini (default) — already set in :root with gemini colors */
-
-    /* Light Crystal */
-    .theme-light {
-      --bg-primary: #f0f4f8;
-      --bg-secondary: #ffffff;
-      --glass-bg: rgba(255, 255, 255, 0.72);
-      --glass-border: rgba(0, 0, 0, 0.08);
-      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
-      --cyan: #2563eb;
-      --cyan-glow: rgba(37, 99, 235, 0.25);
-      --pink: #dc2626;
-      --pink-glow: rgba(220, 38, 38, 0.25);
-      --purple: #7c3aed;
-      --gemini-blue: #2563eb;
-      --gemini-purple: #7c3aed;
-      --gemini-pink: #dc2626;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
-    }
-    .theme-light body,
-    .theme-light {
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(66, 133, 244, 0.04) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
-        var(--bg-primary);
-    }
-
-    /* Neon Cyberpunk */
-    .theme-cyber {
-      --bg-primary: #0a0f1a;
-      --bg-secondary: #111827;
-      --glass-bg: rgba(10, 15, 26, 0.75);
-      --glass-border: rgba(0, 255, 136, 0.12);
-      --glass-shadow: 0 8px 32px rgba(0, 255, 136, 0.08);
-      --cyan: #00ff88;
-      --cyan-glow: rgba(0, 255, 136, 0.40);
-      --pink: #ff007f;
-      --pink-glow: rgba(255, 0, 127, 0.40);
-      --purple: #ff00ff;
-      --text-primary: #e2e8f0;
-      --text-secondary: #94a3b8;
-    }
-    .theme-cyber body,
-    .theme-cyber {
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 255, 136, 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(255, 0, 127, 0.06) 0%, transparent 60%),
-        var(--bg-primary);
-    }
-
-    /* Pastel Dream */
-    .theme-pastel {
-      --bg-primary: #fef9ef;
-      --bg-secondary: #ffffff;
-      --glass-bg: rgba(255, 255, 255, 0.78);
-      --glass-border: rgba(0, 0, 0, 0.06);
-      --glass-shadow: 0 8px 32px rgba(249, 168, 212, 0.12);
-      --cyan: #7dd3fc;
-      --cyan-glow: rgba(125, 211, 252, 0.30);
-      --pink: #f9a8d4;
-      --pink-glow: rgba(249, 168, 212, 0.30);
-      --purple: #c084fc;
-      --text-primary: #334155;
-      --text-secondary: #94a3b8;
-    }
-    .theme-pastel body,
-    .theme-pastel {
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192, 132, 252, 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(249, 168, 212, 0.06) 0%, transparent 60%),
-        var(--bg-primary);
-    }
-
-    /* Midnight Gold */
-    .theme-gold {
-      --bg-primary: #0c1222;
-      --bg-secondary: #151d33;
-      --glass-bg: rgba(12, 18, 34, 0.72);
-      --glass-border: rgba(251, 191, 36, 0.10);
-      --glass-shadow: 0 8px 32px rgba(251, 191, 36, 0.06);
-      --cyan: #fbbf24;
-      --cyan-glow: rgba(251, 191, 36, 0.30);
-      --pink: #9ca3af;
-      --pink-glow: rgba(156, 163, 175, 0.25);
-      --purple: #f59e0b;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-    }
-    .theme-gemini body,
-    .theme-gemini {
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(66, 133, 244, 0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse 70% 50% at 90% 80%, rgba(217, 70, 239, 0.06) 0%, transparent 60%),
-        var(--bg-primary);
-    }
-
-    /* ===== THEME SELECTOR ===== */
-    .theme-selector {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .theme-selector .theme-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--text-secondary);
-      margin-right: 2px;
-    }
-
-    .theme-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-      outline: none;
-      padding: 0;
-    }
-
-    .theme-btn:hover {
-      transform: scale(1.2);
-    }
-
-    .theme-btn:active {
-      transform: scale(0.95);
-    }
-
-    .theme-btn.active {
-      border-color: var(--text-primary);
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
-    }
-
-    .theme-btn .check {
-      position: absolute;
+    /* Material texture: a single noise layer underneath all content */
+    body::before {
+      content: "";
+      position: fixed;
       inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: var(--grain);
+      background-size: var(--grain-size);
+      opacity: var(--grain-opacity);
+    }
+
+    :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: var(--sp-4) var(--sp-4) var(--sp-7);
+    }
+
+    .ic { width: 18px; height: 18px; flex: none; display: block; }
+
+    .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    /* Icons: one stroke weight throughout, inherited by <use> */
+    .sprite path, .sprite circle {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ===== MASTHEAD ===== */
+    .masthead {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.65rem;
-      opacity: 0;
-      transition: var(--transition);
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: var(--sp-3);
+      margin-bottom: var(--sp-5);
     }
 
-    .theme-btn.active .check {
-      opacity: 1;
+    .masthead__title {
+      font-family: var(--f-display);
+      font-size: var(--fs-5);
+      font-weight: 600;
+      line-height: .95;
+      letter-spacing: -.025em;
+      margin: 0;
     }
 
-    /* Theme button colors */
-    .theme-btn[data-theme="gemini"] {
-      background: linear-gradient(135deg, #4285F4, #8B5CF6, #d946ef);
-    }
-    .theme-btn[data-theme="gemini"] .check { color: #fff; }
-
-    .theme-btn[data-theme="light"] {
-      background: linear-gradient(135deg, #2563eb, #7c3aed);
-    }
-    .theme-btn[data-theme="light"] .check { color: #fff; }
-
-    .theme-btn[data-theme="cyber"] {
-      background: linear-gradient(135deg, #00ff88, #ff007f);
-    }
-    .theme-btn[data-theme="cyber"] .check { color: #000; }
-
-    .theme-btn[data-theme="pastel"] {
-      background: linear-gradient(135deg, #7dd3fc, #f9a8d4);
-    }
-    .theme-btn[data-theme="pastel"] .check { color: #334155; }
-
-    .theme-btn[data-theme="gold"] {
-      background: linear-gradient(135deg, #fbbf24, #9ca3af);
-    }
-    .theme-btn[data-theme="gold"] .check { color: #0c1222; }
-
-    /* ===== MODE SELECTOR ===== */
-    .mode-selector {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      justify-content: center;
+    .masthead__credit {
+      margin: var(--sp-2) 0 0;
+      font-size: var(--fs-1);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
     }
 
-    .mode-btn {
-      padding: 8px 18px;
-      border: 1px solid var(--glass-border);
-      border-radius: 40px;
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-secondary);
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: var(--font);
-      letter-spacing: 0.3px;
-    }
+    /* ===== LAYOUT ===== */
+    .stage { display: grid; gap: var(--sp-5); align-items: start; }
 
-    .mode-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary);
-    }
+    .play { display: grid; gap: var(--sp-4); }
 
-    .mode-btn.active {
-      background: linear-gradient(135deg, rgba(66, 133, 244, 0.15), rgba(139, 92, 246, 0.15));
-      border-color: rgba(66, 133, 244, 0.3);
-      color: var(--cyan);
-      box-shadow: 0 0 20px var(--cyan-glow);
-    }
-
-    /* ===== SCOREBOARD ===== */
-    .scoreboard {
+    /* ===== SEGMENTED CONTROL ===== */
+    .seg {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 24px;
+      border: 1px solid var(--rule);
+      border-radius: var(--r2);
+      overflow: hidden;
+      background: var(--surface);
     }
 
-    .score-item {
-      text-align: center;
-      padding: 12px 8px;
-      border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      transition: var(--transition);
-    }
-
-    .score-item:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .score-item .label {
-      font-size: 0.7rem;
+    .seg__btn {
+      min-height: 44px;
+      padding: 0 var(--sp-2);
+      border: 0;
+      border-left: 1px solid var(--rule);
+      background: transparent;
+      color: var(--ink-soft);
+      font-family: var(--f-mono);
+      font-size: var(--fs-1);
+      font-weight: 500;
+      letter-spacing: .06em;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
+      cursor: pointer;
+      transition: background-color var(--d-1) var(--ease-out), color var(--d-1) var(--ease-out);
     }
 
-    .score-item .value {
-      font-size: 1.6rem;
-      font-weight: 700;
+    .seg__btn:first-child { border-left: 0; }
+    .seg__btn:hover { background: var(--surface-2); color: var(--ink); }
+    .seg__btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+
+    /* ===== SCOREBOARD (doubles as the turn indicator) ===== */
+    .scoreblock {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
     }
 
-    .score-item.x-score .value { color: var(--cyan); }
-    .score-item.o-score .value { color: var(--pink); }
-    .score-item.draw-score .value { color: var(--text-secondary); }
+    .score { display: grid; grid-template-columns: 1fr auto 1fr; }
 
-    /* Name change highlight animation */
-    .score-item .label.name-changed {
-      animation: 0.8s ease-out;
+    .score__cell {
+      padding: var(--sp-3) var(--sp-3) var(--sp-3) 0;
+      text-align: left;
+      transition: box-shadow var(--d-2) var(--ease-out);
     }
 
-    .score-item.x-score .label.name-changed {
-      animation-name: nameGlowX;
+    .score__cell[data-side="X"] { --accent: var(--x); }
+    .score__cell[data-side="O"] { --accent: var(--o); }
+
+    .score__cell[data-side="O"] {
+      padding: var(--sp-3) 0 var(--sp-3) var(--sp-3);
+      text-align: right;
     }
 
-    .score-item.o-score .label.name-changed {
-      animation-name: nameGlowO;
-    }
-
-    @keyframes nameGlowX {
-      0% {
-        color: var(--text-secondary);
-        text-shadow: 0 0 0 transparent;
-      }
-      40% {
-        color: var(--cyan);
-        text-shadow: 0 0 20px var(--cyan-glow);
-      }
-      100% {
-        color: var(--text-secondary);
-        text-shadow: 0 0 0 transparent;
-      }
-    }
-
-    @keyframes nameGlowO {
-      0% {
-        color: var(--text-secondary);
-        text-shadow: 0 0 0 transparent;
-      }
-      40% {
-        color: var(--pink);
-        text-shadow: 0 0 20px var(--pink-glow);
-      }
-      100% {
-        color: var(--text-secondary);
-        text-shadow: 0 0 0 transparent;
-      }
-    }
-
-    /* ===== TURN INDICATOR ===== */
-    .turn-indicator {
+    .score__cell--mid {
+      padding: var(--sp-3);
       text-align: center;
-      margin-bottom: 20px;
-      padding: 10px 16px;
-      border-radius: 40px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--glass-border);
-      font-size: 0.95rem;
+      min-width: 84px;
+      border-left: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+    }
+
+    .score__cell.is-active { box-shadow: inset 0 -2px 0 var(--accent); }
+
+    .score__name {
+      display: block;
+      width: 100%;
+      /* Touch target raised to 44px without changing line spacing. */
+      min-height: 44px;
+      padding: 8px 0;
+      margin: -8px 0;
+      border: 0;
+      background: none;
+      text-align: inherit;
+      font-family: var(--f-display);
+      font-size: var(--fs-3);
       font-weight: 600;
-      letter-spacing: 0.5px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      letter-spacing: -.01em;
+      color: var(--ink-soft);
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color var(--d-1) var(--ease-out), transform var(--d-2) var(--ease-out);
     }
 
-    .turn-indicator .turn-dot {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      transition: var(--transition);
+    .score__name--static { cursor: default; }
+    .score__name:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+    .score__name--static:hover { text-decoration: none; color: var(--ink-soft); }
+
+    .score__num {
+      display: block;
+      font-size: var(--fs-4);
+      font-weight: 500;
+      letter-spacing: -.02em;
+      font-variant-numeric: tabular-nums;
+      transition: color var(--d-2) var(--ease-out), transform var(--d-2) var(--ease-out);
     }
 
-    .turn-indicator .turn-dot.cyan { background: var(--cyan); box-shadow: 0 0 12px var(--cyan-glow); }
-    .turn-indicator .turn-dot.pink { background: var(--pink); box-shadow: 0 0 12px var(--pink-glow); }
+    .score__cell.is-active .score__name { color: var(--ink); transform: translateY(-3px); }
+    .score__cell.is-active .score__num { color: var(--accent); transform: translateY(-3px); }
 
-    /* ===== GAME BOARD ===== */
-    .board-wrapper {
+    .score__input {
+      width: 100%;
+      padding: var(--sp-1) var(--sp-2);
+      border: 1px solid var(--rule);
+      border-radius: var(--r);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: var(--f-display);
+      font-size: 16px;
+      font-weight: 600;
+      text-align: inherit;
+    }
+
+    .status {
+      margin: 0;
+      padding: var(--sp-2) 0;
+      border-top: 1px solid var(--rule);
+      font-size: var(--fs-1);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    /* ===== BOARD ===== */
+    .boardwrap {
       position: relative;
       width: 100%;
-      max-width: 400px;
-      margin: 0 auto 24px;
+      max-width: 440px;
       aspect-ratio: 1 / 1;
     }
 
     .board {
+      position: absolute;
+      inset: 0;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      gap: 8px;
-      width: 100%;
-      height: 100%;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      box-shadow: 4px 4px 0 var(--shadow-hard);
     }
 
     .cell {
       position: relative;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: var(--surface);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.6rem;
-      font-weight: 700;
-      transition: background var(--transition), transform 0.15s ease, border-color var(--transition);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      aspect-ratio: 1 / 1;
+      color: var(--x);
+      transition: background-color var(--d-1) var(--ease-out), opacity var(--d-3) var(--ease-out);
     }
 
-    .cell:hover:not(.taken):not(.game-over) {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.15);
+    .cell[aria-disabled="false"]:hover { background: var(--surface-2); }
+    .cell[aria-disabled="true"] { cursor: default; }
+
+    .mark {
+      width: 100%;
+      height: 100%;
+      display: block;
+      color: var(--x);
+      filter: drop-shadow(2px 2px 0 var(--shadow-hard));
+      transition: transform var(--d-3) var(--ease-out), filter var(--d-3) var(--ease-out);
     }
 
-    .cell:active:not(.taken):not(.game-over) {
-      transform: scale(0.95);
+    .cell[data-mark="O"] .mark { color: var(--o); }
+
+    .mark line, .mark circle {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 7;
+      stroke-linecap: butt;
+      stroke-linejoin: miter;
+      animation: draw var(--d-2) var(--ease-out) forwards;
     }
 
-    .cell.taken {
-      cursor: default;
-    }
+    .mark line { stroke-dasharray: 86; stroke-dashoffset: 86; }
+    .mark circle { stroke-dasharray: 190; stroke-dashoffset: 190; }
+    .mark line + line { animation-delay: 70ms; }
 
-    .cell.game-over {
-      cursor: default;
-    }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
 
-    .cell .mark {
-      position: relative;
-      z-index: 2;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
-    }
+    /* Keyboard focus on a cell must stay clearly visible above the mark */
+    .cell:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; }
 
-    .cell .mark.show {
-      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
+    /* Winning mark: rises, shadow moves further out, the rest of the board dims */
+    .board.is-over .cell:not(.is-win) { opacity: .34; }
+    .cell.is-win .mark { transform: translate(-3px, -3px); filter: drop-shadow(4px 4px 0 var(--shadow-hard)); }
 
-    @keyframes popIn {
-      0% { transform: scale(0); opacity: 0; }
-      60% { transform: scale(1.2); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .cell .mark.x-mark { color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
-    .cell .mark.o-mark { color: var(--pink); text-shadow: 0 0 20px var(--pink-glow); }
-
-    /* Hover preview */
-    .cell:not(.taken):not(.game-over) .preview {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.6rem;
-      font-weight: 700;
+    /* Move preview: decorative only, never the sole indicator */
+    .ghost {
+      width: 100%;
+      height: 100%;
+      display: block;
       opacity: 0;
-      transition: opacity 0.2s ease;
-      z-index: 1;
-      pointer-events: none;
+      color: var(--x);
+      transition: opacity var(--d-1) var(--ease-out);
     }
 
-    .cell:not(.taken):not(.game-over):hover .preview {
-      opacity: 0.2;
-    }
+    .ghost line, .ghost circle { fill: none; stroke: currentColor; stroke-width: 7; }
+    .ghost .gh-x, .ghost .gh-o { display: none; }
 
-    .cell .preview.cyan { color: var(--cyan); }
-    .cell .preview.pink { color: var(--pink); }
+    .board[data-turn="X"] .cell[aria-disabled="false"] .ghost { color: var(--x); }
+    .board[data-turn="O"] .cell[aria-disabled="false"] .ghost { color: var(--o); }
+    .board[data-turn="X"] .cell[aria-disabled="false"] .ghost .gh-x { display: block; }
+    .board[data-turn="O"] .cell[aria-disabled="false"] .ghost .gh-o { display: block; }
+    .cell[aria-disabled="false"]:hover .ghost { opacity: .16; }
 
-    /* ===== WINNING LINE (SVG overlay) ===== */
-    .winning-line-svg {
+    .winline {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 5;
+      z-index: 2;
+      overflow: visible;
     }
 
-    .winning-line-svg line {
-      stroke-width: 5;
+    .winline line {
+      fill: none;
+      stroke-width: 3.5;
       stroke-linecap: round;
       opacity: 0;
-      transition: opacity 0.3s ease;
     }
 
-    .winning-line-svg line.cyan-stroke { stroke: var(--cyan); filter: drop-shadow(0 0 10px var(--cyan-glow)); }
-    .winning-line-svg line.pink-stroke { stroke: var(--pink); filter: drop-shadow(0 0 10px var(--pink-glow)); }
-
-    .winning-line-svg line.animate {
-      opacity: 0.9;
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 1000;
-      animation: drawLine 0.6s ease forwards;
+    .winline.is-on line {
+      opacity: 1;
+      stroke-dasharray: 210;
+      stroke-dashoffset: 210;
+      animation: draw var(--d-3) var(--ease-out) forwards;
     }
 
-    @keyframes drawLine {
-      to { stroke-dashoffset: 0; }
-    }
+    .winline.is-x line { stroke: var(--x); }
+    .winline.is-o line { stroke: var(--o); }
 
-    /* ===== WINNING CELL GLOW ===== */
-    .cell.win-cell {
-      animation: winPulse 1s ease-in-out infinite alternate;
-    }
-
-    @keyframes winPulse {
-      0% { box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05); }
-      100% { box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.12); }
-    }
-
-    .cell.win-cell.x-win { border-color: var(--cyan-glow); }
-    .cell.win-cell.o-win { border-color: var(--pink-glow); }
-
-    /* ===== CONTROLS ===== */
-    .controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .controls .btn {
-      padding: 10px 22px;
-      border: 1px solid var(--glass-border);
-      border-radius: 40px;
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-primary);
-      font-size: 0.82rem;
-      font-weight: 500;
-      font-family: var(--font);
-      cursor: pointer;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: 0.3px;
-    }
-
-    .controls .btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .controls .btn:active {
-      transform: scale(0.96);
-    }
-
-    .controls .btn.primary {
-      background: linear-gradient(135deg, rgba(66, 133, 244, 0.12), rgba(139, 92, 246, 0.12));
-      border-color: rgba(66, 133, 244, 0.2);
-      color: var(--cyan);
-    }
-
-    .controls .btn.primary:hover {
-      background: linear-gradient(135deg, rgba(66, 133, 244, 0.2), rgba(139, 92, 246, 0.2));
-      box-shadow: 0 0 20px var(--cyan-glow);
-    }
-
-    .controls .btn.danger {
-      color: #f87171;
-    }
-
-    .controls .btn.danger:hover {
-      background: rgba(248, 113, 113, 0.1);
-      border-color: rgba(248, 113, 113, 0.2);
-    }
-
-    /* Mute button */
-    .btn-mute {
-      padding: 8px 12px !important;
-      font-size: 1.1rem !important;
-      min-width: 40px;
-      justify-content: center !important;
-    }
-
-    /* Share button */
-    .btn-share {
-      color: var(--gemini-purple) !important;
-    }
-
-    .btn-share:hover {
-      background: rgba(139, 92, 246, 0.1) !important;
-      border-color: rgba(139, 92, 246, 0.2) !important;
-    }
-
-    /* Set Names trigger button */
-    .names-trigger {
-      text-align: center;
-      margin: 16px 0 4px;
-    }
-
-    .btn-names {
-      padding: 8px 24px !important;
-      color: var(--text-secondary) !important;
-      letter-spacing: 0.5px !important;
-      border: 1px solid var(--glass-border) !important;
-      background: rgba(255, 255, 255, 0.04) !important;
-    }
-
-    .btn-names:hover {
-      color: var(--text-primary) !important;
-      border-color: rgba(255, 255, 255, 0.15) !important;
-      background: rgba(255, 255, 255, 0.08) !important;
-    }
-
-    /* ===== NAMES MODAL ===== */
-    .names-content {
-      max-width: 340px;
-      text-align: left;
-      position: relative;
-    }
-
-    .names-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, color 0.2s, transform 0.2s;
-      font-family: var(--font);
-      z-index: 2;
-    }
-
-    .names-close:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: var(--text-primary);
-      transform: scale(1.15);
-    }
-
-    .names-close:active {
-      transform: scale(0.92);
-    }
-
-    .names-icon {
-      text-align: center;
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-    }
-
-    .names-content h2 {
-      text-align: center;
-    }
-
-    .names-sub {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .names-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-
-    .name-field label {
-      display: block;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-    }
-
-    .name-field input {
-      width: 100%;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--glass-border);
-      border-radius: 10px;
-      color: var(--text-primary);
-      font-family: var(--font);
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .name-field input:focus {
-      border-color: var(--gemini-blue);
-      box-shadow: 0 0 12px var(--gemini-blue-glow);
-    }
-
-    .name-field input::placeholder {
-      color: var(--text-secondary);
-      opacity: 0.4;
-    }
-
-    /* ===== TOAST NOTIFICATION ===== */
-    .toast-container {
+    /* ===== RESULT POPUP & ACTIONS ===== */
+    .sheet {
       position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 200;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: var(--sp-4);
+      background: var(--scrim);
+      animation: scrimIn var(--d-2) var(--ease-out);
     }
 
-    .toast {
-      padding: 12px 24px;
-      border-radius: 12px;
-      background: var(--bg-secondary);
-      border: 1px solid rgba(66, 133, 244, 0.3);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(66, 133, 244, 0.1);
-      color: var(--text-primary);
-      font-size: 0.85rem;
-      font-weight: 500;
-      font-family: var(--font);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      pointer-events: auto;
+    .sheet[hidden] { display: none; }
+
+    .sheet__card {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      padding: var(--sp-5);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: var(--r2);
+      box-shadow: 8px 8px 0 var(--shadow-hard);
+      overflow: hidden;
+      animation: sheetIn var(--d-3) var(--ease-out);
+    }
+
+    /* Accent bar: the winner's colour, neutral on a draw */
+    .sheet__stamp {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 6px;
+      background: var(--ink-soft);
+    }
+
+    .sheet__stamp.is-x { background: var(--x); }
+    .sheet__stamp.is-o { background: var(--o); }
+
+    .sheet__title {
+      margin: 0 0 var(--sp-2);
+      font-family: var(--f-display);
+      font-size: var(--fs-4);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+
+    .sheet__sub {
+      margin: 0;
+      font-size: var(--fs-1);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .toast .toast-icon {
-      font-size: 1.1rem;
-    }
-
-    .toast .toast-text {
+    .sheet__award {
       display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .toast .toast-text .toast-title {
-      font-weight: 600;
-    }
-
-    .toast .toast-text .toast-sub {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      font-weight: 400;
-    }
-
-    @keyframes toastIn {
-      0% { transform: translateY(20px) scale(0.9); opacity: 0; }
-      100% { transform: translateY(0) scale(1); opacity: 1; }
-    }
-
-    @keyframes toastOut {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(10px) scale(0.95); opacity: 0; }
-    }
-
-    .toast.out {
-      animation: toastOut 0.25s ease forwards;
-    }
-
-    /* ===== MODAL / OVERLAY ===== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      display: none;
       align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 20px;
-      animation: fadeIn 0.3s ease;
+      gap: var(--sp-2);
+      margin: var(--sp-4) 0 0;
+      padding-top: var(--sp-3);
+      border-top: 1px solid var(--rule);
+      font-size: var(--fs-1);
+      color: var(--o);
     }
 
-    .modal-overlay.open {
-      display: flex;
+    .sheet__award[hidden] { display: none; }
+    .sheet__award .ic { width: 16px; height: 16px; }
+
+    .sheet__actions {
+      display: grid;
+      gap: var(--sp-2);
+      margin-top: var(--sp-5);
     }
 
-    @keyframes fadeIn {
+    @keyframes scrimIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
 
-    .modal-content {
-      background: var(--bg-secondary);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 36px 32px 28px;
-      max-width: 380px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      animation: modalSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
-      overflow: hidden;
+    @keyframes sheetIn {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
-    @keyframes modalSlideIn {
-      from { transform: translateY(30px) scale(0.95); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
+    @keyframes sheetUp {
+      from { transform: translateY(101%); }
+      to { transform: translateY(0); }
     }
 
-    .modal-content .result-icon {
-      font-size: 3rem;
-      margin-bottom: 12px;
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-3);
+      border-top: 1px solid var(--rule);
+      padding-top: var(--sp-4);
     }
 
-    .modal-content h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .modal-content .result-sub {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-    }
-
-    .modal-content .btn {
-      padding: 10px 32px;
-      border: 1px solid var(--glass-border);
-      border-radius: 40px;
-      background: linear-gradient(135deg, rgba(66, 133, 244, 0.12), rgba(139, 92, 246, 0.12));
-      border-color: rgba(66, 133, 244, 0.2);
-      color: var(--cyan);
-      font-size: 0.9rem;
-      font-weight: 600;
-      font-family: var(--font);
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      min-height: 44px;
+      padding: 0 var(--sp-4);
+      border: 1px solid var(--rule);
+      border-radius: var(--r2);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--f-mono);
+      font-size: var(--fs-1);
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: var(--transition);
+      transition: transform var(--d-1) var(--ease-out), background-color var(--d-1) var(--ease-out),
+                  color var(--d-1) var(--ease-out), box-shadow var(--d-1) var(--ease-out);
     }
 
-    .modal-content .btn:hover {
-      background: linear-gradient(135deg, rgba(66, 133, 244, 0.2), rgba(139, 92, 246, 0.2));
-      box-shadow: 0 0 20px var(--cyan-glow);
+    .btn:hover { background: var(--surface-2); }
+    .btn:active { transform: translate(1px, 1px); box-shadow: none; }
+
+    .btn--solid {
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
+      box-shadow: var(--sh-1);
     }
 
-    .modal-content .btn:active {
-      transform: scale(0.96);
+    .btn--solid:hover { background: var(--ink); box-shadow: var(--sh-2); transform: translate(-1px, -1px); }
+
+    .btn--plain {
+      border-color: transparent;
+      background: transparent;
+      color: var(--ink-soft);
+      padding: 0 var(--sp-2);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
     }
 
-    /* ===== PARTICLE BACKGROUND ===== */
-    #particle-bg {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
+    .btn--plain:hover { background: transparent; color: var(--ink); }
+
+    /* ===== DESK (settings panel) ===== */
+    .meja { display: grid; gap: var(--sp-5); }
+
+    .meja__bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-3);
     }
 
-    /* ===== CONFETTI CANVAS ===== */
-    #confetti-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 99;
+    .meja__title {
+      margin: 0;
+      font-family: var(--f-display);
+      font-size: var(--fs-3);
+      font-weight: 600;
+      letter-spacing: -.01em;
     }
+
+    .meja__close { display: inline-flex; }
+
+    .field {
+      display: grid;
+      gap: var(--sp-3);
+      margin: 0;
+      padding: var(--sp-3) 0 0;
+      border: 0;
+      border-top: 1px solid var(--rule);
+    }
+
+    .field__label {
+      display: block;
+      margin: 0;
+      padding: 0;
+      font-family: var(--f-mono);
+      font-size: var(--fs-1);
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .swatches { display: grid; gap: var(--sp-2); }
+
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      min-height: 44px;
+      cursor: pointer;
+      color: var(--ink-soft);
+      transition: color var(--d-1) var(--ease-out);
+    }
+
+    .swatch:hover { color: var(--ink); }
+    .swatch input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+    .swatch__dot {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      flex: none;
+      background: var(--sx);
+      box-shadow: inset 0 0 0 1px var(--rule), 0 0 0 2px var(--ssurface);
+    }
+
+    .swatch__dot::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 0 50%;
+      background: var(--so);
+    }
+
+    .swatch[data-sw="kertas"] { --sx: #1F5C63; --so: #A6432C; --ssurface: #EFE7D8; }
+    .swatch[data-sw="kayu"]   { --sx: #6FA8A0; --so: #D98A4B; --ssurface: #221A14; }
+    .swatch[data-sw="kapur"]  { --sx: #7FD1C0; --so: #F0A868; --ssurface: #1E2A24; }
+
+    .swatch__name { font-size: var(--fs-2); }
+
+    .swatch input:checked ~ .swatch__dot { box-shadow: inset 0 0 0 1px var(--rule), var(--sh-1); }
+    .swatch input:checked ~ .swatch__name { color: var(--ink); font-weight: 500; }
+    .swatch input:focus-visible ~ .swatch__dot { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      min-height: 44px;
+      cursor: pointer;
+      color: var(--ink-soft);
+    }
+
+    .toggle:hover { color: var(--ink); }
+    .toggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+    .toggle__box {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      flex: none;
+      border: 1px solid var(--rule);
+      background: var(--surface);
+      transition: background-color var(--d-1) var(--ease-out);
+    }
+
+    .toggle__box::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity var(--d-1) var(--ease-out);
+    }
+
+    .toggle input:checked ~ .toggle__box { background: var(--ink); }
+    .toggle input:checked ~ .toggle__box::after { opacity: 1; }
+    .toggle input:checked ~ .toggle__text { color: var(--ink); }
+    .toggle input:focus-visible ~ .toggle__box { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+    .awards { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+
+    .award {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: var(--sp-3);
+      align-items: start;
+      opacity: .42;
+      transition: opacity var(--d-3) var(--ease-both);
+    }
+
+    .award.is-open { opacity: 1; }
+
+    .award__mark { width: 18px; height: 18px; color: var(--ink-soft); margin-top: 3px; }
+    .award.is-open .award__mark { color: var(--o); }
+
+    .award__name {
+      display: block;
+      font-family: var(--f-display);
+      font-size: var(--fs-2);
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .award__hint { display: block; font-size: var(--fs-1); color: var(--ink-soft); line-height: 1.45; }
+
+    .award.is-new { animation: stamp var(--d-3) var(--ease-out); }
+
+    @keyframes stamp {
+      from { transform: translateY(-3px); opacity: .4; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .note {
+      margin: 0;
+      border-top: 1px solid var(--rule);
+      padding-top: var(--sp-3);
+      font-size: var(--fs-1);
+      color: var(--ink-soft);
+    }
+
+    .scrim { position: fixed; inset: 0; z-index: 20; background: var(--scrim); }
 
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 480px) {
-      body { padding-top: max(16px, env(safe-area-inset-top, 0px)); padding-bottom: 16px; }
-      .container { padding: 10px; margin: 8px auto; }
-      .glass-panel { padding: 20px 16px; }
-      .header h1 { font-size: 1.5rem; }
-      .cell { font-size: 2rem; border-radius: 10px; }
-      .board { gap: 6px; }
-      .score-item .value { font-size: 1.3rem; }
-      .scoreboard { gap: 8px; }
-      .controls .btn { padding: 8px 16px; font-size: 0.75rem; }
-      .mode-btn { padding: 6px 14px; font-size: 0.75rem; }
-      .modal-content { padding: 28px 20px 24px; }
+    @media (max-width: 899px) {
+      .meja {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 30;
+        max-height: 86dvh;
+        overflow-y: auto;
+        padding: var(--sp-4) var(--sp-4) calc(var(--sp-5) + env(safe-area-inset-bottom, 0px));
+        background: var(--surface);
+        border-top: 1px solid var(--rule);
+        box-shadow: 0 -4px 0 var(--shadow-hard);
+        transform: translateY(101%);
+        transition: transform var(--d-3) var(--ease-out);
+      }
+
+      body.meja-open .meja { transform: translateY(0); }
+      body.meja-open { overflow: hidden; }
+
+      /* Popup becomes a bottom sheet so the primary button stays within thumb reach */
+      .sheet { place-items: end center; padding: 0; }
+
+      .sheet__card {
+        max-width: none;
+        border-radius: var(--r2) var(--r2) 0 0;
+        border-bottom: 0;
+        padding-bottom: calc(var(--sp-5) + env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 -4px 0 var(--shadow-hard);
+        animation-name: sheetUp;
+      }
+
+      .sheet__again { min-height: 52px; }
     }
 
-    @media (max-width: 360px) {
-      body { padding-top: max(12px, env(safe-area-inset-top, 0px)); padding-bottom: 12px; }
-      .cell { font-size: 1.6rem; }
-      .scoreboard { grid-template-columns: repeat(3, 1fr); gap: 4px; }
-      .score-item { padding: 8px 4px; }
-      .score-item .value { font-size: 1.1rem; }
+    @media (min-width: 900px) {
+      .page { padding: var(--sp-6) var(--sp-5) var(--sp-7); }
+      .stage { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: clamp(24px, 4vw, 56px); }
+      .board { box-shadow: 6px 6px 0 var(--shadow-hard); }
+      .meja-toggle, .scrim { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms;
+        animation-iteration-count: 1;
+        transition-duration: .001ms;
+      }
+      .mark line, .mark circle { animation: none; stroke-dashoffset: 0; }
+      .winline.is-on line { animation: none; stroke-dashoffset: 0; opacity: 1; }
+      .award.is-new { animation: none; }
+      /* Popup: its resting state is off-screen, so the animation must be switched off
+         entirely for it to appear instantly and never depend on a rendered frame. */
+      .sheet, .sheet__card { animation: none; }
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="glass-panel">
+<body data-theme="kertas">
+  <div class="page">
+    <header class="masthead">
+      <div>
+        <h1 class="masthead__title">TIC·TAC·TOE</h1>
+        <p class="masthead__credit">By Aditia Angga Perdana</p>
+      </div>
+      <button type="button" class="btn btn--plain meja-toggle" id="mejaToggle" aria-expanded="false" aria-controls="meja">Desk</button>
+    </header>
 
-      <!-- HEADER with Gemini Spark Icon -->
-      <div class="header">
-        <div class="gemini-spark" aria-hidden="true">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="center-dot"></span>
+    <main class="stage">
+      <section class="play" aria-label="Game">
+        <div class="seg" role="group" aria-label="Game mode">
+          <button type="button" class="seg__btn" data-mode="2p" aria-pressed="true">2 Players</button>
+          <button type="button" class="seg__btn" data-mode="ai-easy" aria-pressed="false">Easy AI</button>
+          <button type="button" class="seg__btn" data-mode="ai-hard" aria-pressed="false">Hard AI</button>
         </div>
-        <div class="header-text">
-          <h1>TIC–TAC–TOE</h1>
-          <span class="subtitle">✦By Aditia Angga Perdana✦</span>
+
+        <div class="scoreblock">
+          <div class="score">
+            <div class="score__cell" data-side="X">
+              <button type="button" class="score__name" id="nameX" title="Click to edit name">X</button>
+              <span class="score__num" id="scoreX">0</span>
+            </div>
+            <div class="score__cell score__cell--mid">
+              <span class="score__name score__name--static">Draw</span>
+              <span class="score__num" id="scoreDraw">0</span>
+            </div>
+            <div class="score__cell" data-side="O">
+              <button type="button" class="score__name" id="nameO" title="Click to edit name">O</button>
+              <span class="score__num" id="scoreO">0</span>
+            </div>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite">X to play</p>
         </div>
-      </div>
 
-      <!-- MODE SELECTOR -->
-      <div class="mode-selector" id="modeSelector">
-        <button class="mode-btn active" data-mode="2p">👥 2 Players</button>
-        <button class="mode-btn" data-mode="ai-easy">🤖 AI Easy</button>
-        <button class="mode-btn" data-mode="ai-hard">🧠 AI Hard</button>
-      </div>
-
-      <!-- THEME SELECTOR -->
-      <div class="theme-selector" id="themeSelector">
-        <span class="theme-label">Theme</span>
-        <button class="theme-btn active" data-theme="gemini" title="Google Gemini"><span class="check">✓</span></button>
-        <button class="theme-btn"        data-theme="light"   title="Light Crystal"><span class="check">✓</span></button>
-        <button class="theme-btn"        data-theme="cyber"   title="Neon Cyberpunk"><span class="check">✓</span></button>
-        <button class="theme-btn"        data-theme="pastel"  title="Pastel Dream"><span class="check">✓</span></button>
-        <button class="theme-btn"        data-theme="gold"    title="Midnight Gold"><span class="check">✓</span></button>
-      </div>
-
-      <!-- SET NAMES TRIGGER -->
-      <div class="names-trigger">
-        <button class="btn btn-names" id="btnSetNames">✏️ Set Names</button>
-      </div>
-
-      <!-- SCOREBOARD -->
-      <div class="scoreboard">
-        <div class="score-item x-score">
-          <div class="label" id="nameLabelX">Player X</div>
-          <div class="value" id="scoreX">0</div>
+        <div class="boardwrap">
+          <div class="board" id="board" role="group" aria-label="Three by three board" data-turn="X">
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+            <button type="button" class="cell"></button>
+          </div>
+          <svg class="winline" id="winline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <line id="winlineEl" x1="16.7" y1="16.7" x2="83.3" y2="83.3"></line>
+          </svg>
         </div>
-        <div class="score-item draw-score">
-          <div class="label">Draws</div>
-          <div class="value" id="scoreDraw">0</div>
+
+        <div class="actions">
+          <button type="button" class="btn" id="btnNew">New round</button>
+          <button type="button" class="btn btn--plain" id="btnZero">Reset scores</button>
         </div>
-        <div class="score-item o-score">
-          <div class="label" id="nameLabelO">Player O</div>
-          <div class="value" id="scoreO">0</div>
+      </section>
+
+      <aside class="meja" id="meja" aria-label="Desk settings">
+        <div class="meja__bar">
+          <h2 class="meja__title">Desk</h2>
+          <button type="button" class="btn btn--plain meja__close" id="mejaClose" aria-label="Close desk">
+            <svg class="ic" aria-hidden="true"><use href="#i-close"></use></svg>
+          </button>
         </div>
-      </div>
 
-      <!-- TURN INDICATOR -->
-      <div class="turn-indicator" id="turnIndicator">
-        <span class="turn-dot cyan" id="turnDot"></span>
-        <span id="turnText">Player X's turn</span>
-      </div>
-
-      <!-- GAME BOARD -->
-      <div class="board-wrapper">
-        <div class="board" id="board">
-          <div class="cell" data-index="0"></div>
-          <div class="cell" data-index="1"></div>
-          <div class="cell" data-index="2"></div>
-          <div class="cell" data-index="3"></div>
-          <div class="cell" data-index="4"></div>
-          <div class="cell" data-index="5"></div>
-          <div class="cell" data-index="6"></div>
-          <div class="cell" data-index="7"></div>
-          <div class="cell" data-index="8"></div>
+        <div class="field">
+          <p class="field__label" id="themeLabel">Theme</p>
+          <div class="swatches" role="radiogroup" aria-labelledby="themeLabel">
+            <label class="swatch" data-sw="kertas">
+              <input type="radio" name="theme" value="kertas" checked>
+              <span class="swatch__dot" aria-hidden="true"></span>
+              <span class="swatch__name">Paper &amp; Ink</span>
+            </label>
+            <label class="swatch" data-sw="kayu">
+              <input type="radio" name="theme" value="kayu">
+              <span class="swatch__dot" aria-hidden="true"></span>
+              <span class="swatch__name">Wood</span>
+            </label>
+            <label class="swatch" data-sw="kapur">
+              <input type="radio" name="theme" value="kapur">
+              <span class="swatch__dot" aria-hidden="true"></span>
+              <span class="swatch__name">Chalk</span>
+            </label>
+          </div>
         </div>
-        <!-- Winning line SVG overlay -->
-        <svg class="winning-line-svg" id="winningLineSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <line id="winLine" x1="0" y1="0" x2="100" y2="100" />
-        </svg>
-      </div>
 
-      <!-- CONTROLS -->
-      <div class="controls">
-        <button class="btn primary" id="btnReset">⟳ New Game</button>
-        <button class="btn danger" id="btnResetScore">✕ Reset Score</button>
-        <button class="btn btn-share" id="btnShareLink" title="Share Score Link">🔗</button>
-        <button class="btn btn-mute" id="btnMute" title="Toggle Sound">🔊</button>
-      </div>
+        <div class="field">
+          <span class="field__label">Sound</span>
+          <label class="toggle">
+            <input type="checkbox" id="soundToggle" role="switch">
+            <span class="toggle__box" aria-hidden="true"></span>
+            <span class="toggle__text" id="soundText">Off</span>
+          </label>
+        </div>
 
+        <div class="field">
+          <span class="field__label">Share</span>
+          <button type="button" class="btn" id="btnShare">
+            <svg class="ic" aria-hidden="true"><use href="#i-share"></use></svg>
+            <span id="shareLabel">Share link</span>
+          </button>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Achievements</span>
+          <ul class="awards" id="awards"></ul>
+        </div>
+
+        <p class="note">Scores, names and themes are stored in this browser.</p>
+      </aside>
+    </main>
+  </div>
+
+  <!-- MATCH RESULT POPUP -->
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet__card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-describedby="sheetSub">
+      <span class="sheet__stamp" id="sheetStamp" aria-hidden="true"></span>
+      <h2 class="sheet__title" id="sheetTitle"></h2>
+      <p class="sheet__sub" id="sheetSub"></p>
+      <p class="sheet__award" id="sheetAward" hidden>
+        <svg class="ic" aria-hidden="true"><use href="#i-medal"></use></svg>
+        <span id="sheetAwardText"></span>
+      </p>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--solid sheet__again" id="btnAgain">Play again</button>
+        <button type="button" class="btn btn--plain" id="btnSheetClose">Back to board</button>
+      </div>
     </div>
   </div>
 
-  <!-- WIN MODAL -->
-  <div class="modal-overlay" id="winModal">
-    <div class="modal-content">
-      <div class="result-icon" id="resultIcon">🏆</div>
-      <h2 id="resultTitle">Player X Wins!</h2>
-      <p class="result-sub" id="resultSub">Great job!</p>
-      <button class="btn" id="modalPlayAgain">Play Again</button>
-    </div>
-  </div>
+  <div class="scrim" id="scrim" hidden></div>
 
-  <!-- PARTICLE BACKGROUND -->
-  <canvas id="particle-bg"></canvas>
-
-  <!-- CONFETTI CANVAS -->
-  <canvas id="confetti-canvas"></canvas>
-
-  <!-- TOAST CONTAINER -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- NAMES MODAL -->
-  <div class="modal-overlay" id="namesModal">
-    <div class="modal-content names-content">
-      <button class="names-close" id="btnNamesClose" title="Close">✕</button>
-      <div class="names-icon">✏️</div>
-      <h2 id="namesTitle">Player Names</h2>
-      <p class="names-sub" id="namesSub">Set your name before playing</p>
-
-      <div class="names-fields">
-        <div class="name-field">
-          <label for="inputNameX">Player X</label>
-          <input type="text" id="inputNameX" maxlength="15" placeholder="Player X" />
-        </div>
-        <div class="name-field" id="fieldO">
-          <label for="inputNameO">Player O</label>
-          <input type="text" id="inputNameO" maxlength="15" placeholder="Player O" />
-        </div>
-      </div>
-
-      <button class="btn" id="btnStartGame">🎮  Start Game</button>
-    </div>
-  </div>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-share" viewBox="0 0 24 24">
+      <path d="M4 13v6.5h16V13"></path>
+      <path d="M12 3.5v11"></path>
+      <path d="M7.5 8L12 3.5 16.5 8"></path>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="M6 6l12 12"></path>
+      <path d="M18 6L6 18"></path>
+    </symbol>
+    <symbol id="i-medal" viewBox="0 0 24 24">
+      <circle cx="12" cy="8.5" r="5.5"></circle>
+      <path d="M8.4 13.2L7 21l5-2.6L17 21l-1.4-7.8"></path>
+    </symbol>
+  </svg>
 
   <script>
-    /* ===================================================================
-     * 🎮  TIC-TAC-TOE  —  Full Game Logic  (Vanilla JS, ES6+)
-     * =================================================================== */
-
-    // ---- STATE ---------------------------------------------------------
     const state = {
-      board: Array(9).fill(null),       // null | 'X' | 'O'
+      board: Array(9).fill(null),   // null | 'X' | 'O'
       currentPlayer: 'X',
       gameOver: false,
-      mode: '2p',                        // '2p' | 'ai-easy' | 'ai-hard'
-      theme: 'gemini',                   // 'gemini' | 'light' | 'cyber' | 'pastel' | 'gold'
-      scores: { X: 0, O: 0, draw: 0 },
-      playerNames: { X: 'Player X', O: 'Player O' },
-      muted: false,
       moveCount: 0,
-      winCombo: null,                    // [a, b, c] | null
-      aiTimeoutId: null,                 // Track AI setTimeout for cleanup
+      winCombo: null,               // [a, b, c] | null
+      mode: '2p',                   // '2p' | 'ai-easy' | 'ai-hard'
+      theme: 'kertas',              // 'kertas' | 'kayu' | 'kapur'
+      scores: { X: 0, O: 0, draw: 0 },
+      playerNames: { X: 'X', O: 'O' },
+      sound: false,                 // sound off by default
+      streak: 0,
+      lastWinner: null,
+      awards: {},
+      themesTried: [],
+      aiTimer: null,
+      sheetTimer: null,   // delay before the result popup appears
     };
 
-    // ---- DOM REFS ------------------------------------------------------
-    const particleCanvas = document.getElementById('particle-bg');
-    const boardEl = document.getElementById('board');
-    const cells = boardEl.querySelectorAll('.cell');
-    const turnDot = document.getElementById('turnDot');
-    const turnText = document.getElementById('turnText');
-    const scoreX = document.getElementById('scoreX');
-    const scoreO = document.getElementById('scoreO');
-    const scoreDraw = document.getElementById('scoreDraw');
-    const nameLabelX = document.getElementById('nameLabelX');
-    const nameLabelO = document.getElementById('nameLabelO');
-    const namesModal = document.getElementById('namesModal');
-    const namesTitle = document.getElementById('namesTitle');
-    const namesSub = document.getElementById('namesSub');
-    const fieldO = document.getElementById('fieldO');
-    const inputNameX = document.getElementById('inputNameX');
-    const inputNameO = document.getElementById('inputNameO');
-    const btnStartGame = document.getElementById('btnStartGame');
-    const winModal = document.getElementById('winModal');
-    const resultIcon = document.getElementById('resultIcon');
-    const resultTitle = document.getElementById('resultTitle');
-    const resultSub = document.getElementById('resultSub');
-    const winLine = document.getElementById('winLine');
-    const winSvg = document.getElementById('winningLineSvg');
-    const btnReset = document.getElementById('btnReset');
-    const btnResetScore = document.getElementById('btnResetScore');
-    const btnMute = document.getElementById('btnMute');
-    const btnShareLink = document.getElementById('btnShareLink');
-    const btnSetNames = document.getElementById('btnSetNames');
-    const modeBtns = document.querySelectorAll('.mode-btn');
-    const themeBtns = document.querySelectorAll('.theme-btn');
+    // ===== GAME LOGIC (pure, no DOM access) =====
 
-    // ---- AUDIO (Web Audio API) -----------------------------------------
-    let audioCtx = null;
-
-    /** Get or create AudioContext (must be resumed after user gesture) */
-    function getAudioCtx() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
-
-    /** Play a simple synth tone */
-    function playTone(freq, duration, type = 'sine', volume = 0.15) {
-      if (state.muted) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(volume, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + duration);
-      } catch (_) { /* silently fail */ }
-    }
-
-    /** Sound: cell click — quick sharp tick */
-    function sndClick() {
-      playTone(800, 0.08, 'square', 0.06);
-    }
-
-    /** Sound: victory — ascending arpeggio */
-    function sndVictory() {
-      playTone(523, 0.15, 'sine', 0.12);
-      setTimeout(() => playTone(659, 0.15, 'sine', 0.12), 120);
-      setTimeout(() => playTone(784, 0.25, 'sine', 0.12), 240);
-    }
-
-    /** Sound: draw — flat two-tone */
-    function sndDraw() {
-      playTone(350, 0.2, 'triangle', 0.1);
-      setTimeout(() => playTone(280, 0.3, 'triangle', 0.1), 200);
-    }
-
-    // ---- SCORE PERSISTENCE: URL + localStorage -------------------------
-
-    /** Load scores from URL params (shared link) */
-    function loadScoresFromURL() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const x = params.get('x');
-        const o = params.get('o');
-        const d = params.get('d');
-        const xn = params.get('xn');
-        const on = params.get('on');
-        if (x !== null || o !== null || d !== null || xn !== null || on !== null) {
-          state.scores.X = parseInt(x) || 0;
-          state.scores.O = parseInt(o) || 0;
-          state.scores.draw = parseInt(d) || 0;
-          if (xn) state.playerNames.X = decodeURIComponent(xn);
-          if (on) state.playerNames.O = decodeURIComponent(on);
-          // Save URL data into localStorage so they persist after link is gone
-          saveScores();
-          savePlayerNames();
-          // Clean URL — remove params so next refresh uses localStorage
-          const cleanURL = window.location.origin + window.location.pathname;
-          window.history.replaceState({}, '', cleanURL);
-          return true;
-        }
-      } catch (_) { /* ignore */ }
-      return false;
-    }
-
-    function loadScores() {
-      // Priority: URL params > localStorage > defaults (0)
-      if (loadScoresFromURL()) return;
-      try {
-        const saved = localStorage.getItem('tictactoe_scores');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          state.scores.X = parsed.X ?? 0;
-          state.scores.O = parsed.O ?? 0;
-          state.scores.draw = parsed.draw ?? 0;
-        }
-      } catch (_) { /* ignore */ }
-    }
-
-    function saveScores() {
-      try {
-        localStorage.setItem('tictactoe_scores', JSON.stringify(state.scores));
-      } catch (_) { /* ignore */ }
-      syncScoreToURL();
-    }
-
-    /** Update URL search params with current scores (without reloading) */
-    function syncScoreToURL() {
-      try {
-        const url = new URL(window.location);
-        const { X, O, draw } = state.scores;
-        const { X: xn, O: on } = state.playerNames;
-        const hasScore = X > 0 || O > 0 || draw > 0;
-        const hasCustomName = xn !== 'Player X' || on !== 'Player O';
-        if (hasScore || hasCustomName) {
-          if (hasScore) {
-            url.searchParams.set('x', X);
-            url.searchParams.set('o', O);
-            url.searchParams.set('d', draw);
-          }
-          if (hasCustomName) {
-            url.searchParams.set('xn', encodeURIComponent(xn));
-            url.searchParams.set('on', encodeURIComponent(on));
-          }
-        } else {
-          url.searchParams.delete('x');
-          url.searchParams.delete('o');
-          url.searchParams.delete('d');
-          url.searchParams.delete('xn');
-          url.searchParams.delete('on');
-        }
-        window.history.replaceState({}, '', url);
-      } catch (_) { /* ignore */ }
-    }
-
-    function updateScoreDisplay() {
-      scoreX.textContent = state.scores.X;
-      scoreO.textContent = state.scores.O;
-      scoreDraw.textContent = state.scores.draw;
-      nameLabelX.textContent = state.playerNames.X;
-      nameLabelO.textContent = state.playerNames.O;
-    }
-
-    // ---- UI UPDATES ----------------------------------------------------
-
-    /** Update the turn indicator text and colour */
-    function updateTurnIndicator() {
-      if (state.gameOver) return;
-      const player = state.currentPlayer;
-      const isX = player === 'X';
-      turnDot.className = 'turn-dot ' + (isX ? 'cyan' : 'pink');
-      const name = state.playerNames[player];
-      const label = state.mode === '2p'
-        ? `${name}'s turn`
-        : (isX ? `Your turn (${name})` : 'AI is thinking…');
-      turnText.textContent = label;
-
-      // If it's the AI's turn (O in single-player modes), trigger AI move
-      if (!isX && !state.gameOver && state.mode !== '2p') {
-        if (state.aiTimeoutId) clearTimeout(state.aiTimeoutId);
-        state.aiTimeoutId = setTimeout(() => {
-          state.aiTimeoutId = null;
-          makeAIMove();
-        }, 350);
-      }
-    }
-
-    /** Render the board: marks and hover previews */
-    function renderBoard() {
-      cells.forEach((cell, i) => {
-        const mark = state.board[i];
-        // Clear cell content except the preview and data
-        cell.innerHTML = '';
-        cell.classList.remove('taken', 'game-over', 'win-cell', 'x-win', 'o-win');
-
-        if (mark) {
-          const span = document.createElement('span');
-          span.className = 'mark show ' + (mark === 'X' ? 'x-mark' : 'o-mark');
-          // Use unicode symbols for a clean look
-          span.textContent = mark === 'X' ? '✕' : '◯';
-          cell.appendChild(span);
-          cell.classList.add('taken');
-        } else if (!state.gameOver) {
-          // Preview on hover
-          const preview = document.createElement('span');
-          preview.className = 'preview ' + (state.currentPlayer === 'X' ? 'cyan' : 'pink');
-          preview.textContent = state.currentPlayer === 'X' ? '✕' : '◯';
-          cell.appendChild(preview);
-        }
-
-        // Highlight winning cells
-        if (state.winCombo && state.winCombo.includes(i)) {
-          cell.classList.add('win-cell');
-          cell.classList.add(state.board[i] === 'X' ? 'x-win' : 'o-win');
-        }
-      });
-    }
-
-    // ---- WIN / DRAW DETECTION ------------------------------------------
-
-    /** All possible winning lines (rows, columns, diagonals) */
     const WIN_LINES = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8],   // rows
       [0, 3, 6], [1, 4, 7], [2, 5, 8],   // columns
-      [0, 4, 8], [2, 4, 6],               // diagonals
+      [0, 4, 8], [2, 4, 6],              // diagonal
     ];
 
-    /**
-     * Check for a winner on the current board.
-     * @returns {null | string}  'X' or 'O' if someone won, else null
-     */
-    function checkWinner(board = state.board) {
-      for (const [a, b, c] of WIN_LINES) {
+    /** @returns {{winner:string, combo:number[]}|null} */
+    function findWinner(board) {
+      for (const line of WIN_LINES) {
+        const [a, b, c] = line;
         if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-          return { winner: board[a], combo: [a, b, c] };
+          return { winner: board[a], combo: line };
         }
       }
       return null;
     }
 
-    /** Check if the board is full (draw) */
-    function isBoardFull(board = state.board) {
+    function emptyCells(board) {
+      const out = [];
+      for (let i = 0; i < 9; i++) if (board[i] === null) out.push(i);
+      return out;
+    }
+
+    function isBoardFull(board) {
       return board.every(cell => cell !== null);
     }
 
-    // ---- WINNING LINE (SVG) --------------------------------------------
+    function other(player) {
+      return player === 'X' ? 'O' : 'X';
+    }
+
+    // ===== AI (minimax) =====
 
     /**
-     * Draw the animated winning line across the 3 winning cells.
-     * Board coordinates are normalised to [0..100] for SVG viewBox.
-     */
-    function drawWinningLine(combo) {
-      const [a, , c] = combo;  // first and last cell
-      const getCenter = (idx) => ({
-        x: (idx % 3) * (100 / 3) + 100 / 6,
-        y: Math.floor(idx / 3) * (100 / 3) + 100 / 6,
-      });
-      const p1 = getCenter(a);
-      const p2 = getCenter(c);
-
-      winLine.setAttribute('x1', p1.x);
-      winLine.setAttribute('y1', p1.y);
-      winLine.setAttribute('x2', p2.x);
-      winLine.setAttribute('y2', p2.y);
-      winLine.classList.remove('animate', 'cyan-stroke', 'pink-stroke');
-      // Force reflow to restart animation
-      void winLine.offsetWidth;
-      const winner = state.board[a];
-      winLine.classList.add('animate', winner === 'X' ? 'cyan-stroke' : 'pink-stroke');
-    }
-
-    function clearWinningLine() {
-      winLine.classList.remove('animate', 'cyan-stroke', 'pink-stroke');
-    }
-
-    // ---- GAME END ------------------------------------------------------
-
-    function endGame(result) {
-      state.gameOver = true;
-      // Clear any pending AI move
-      if (state.aiTimeoutId) {
-        clearTimeout(state.aiTimeoutId);
-        state.aiTimeoutId = null;
-      }
-
-      if (result === 'X' || result === 'O') {
-        state.scores[result]++;
-        // Compute combo for showing win line
-        const found = checkWinner();
-        if (found) state.winCombo = found.combo;
-        saveScores();
-        updateScoreDisplay();
-        renderBoard();
-        // Re-apply game-over class after renderBoard clears it
-        cells.forEach(c => c.classList.add('game-over'));
-        if (state.winCombo) drawWinningLine(state.winCombo);
-        sndVictory();
-        showWinModal(result);
-        startConfetti();
-      } else if (result === 'draw') {
-        state.scores.draw++;
-        saveScores();
-        updateScoreDisplay();
-        renderBoard();
-        cells.forEach(c => c.classList.add('game-over'));
-        sndDraw();
-        showDrawModal();
-      }
-    }
-
-    // ---- PLAYER NAMES ------------------------------------------------
-
-    function loadPlayerNames() {
-      try {
-        const saved = localStorage.getItem('tictactoe_names');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          state.playerNames.X = parsed.X || 'Player X';
-          state.playerNames.O = parsed.O || 'Player O';
-        }
-      } catch (_) { /* ignore */ }
-    }
-
-    function savePlayerNames() {
-      try {
-        localStorage.setItem('tictactoe_names', JSON.stringify(state.playerNames));
-      } catch (_) { /* ignore */ }
-    }
-
-    // ---- NAMES MODAL (popup before game) -------------------------------
-
-    function showNamesModal() {
-      const is2P = state.mode === '2p';
-      inputNameX.value = state.playerNames.X;
-      inputNameO.value = state.playerNames.O;
-
-      // Show/hide player O field based on mode
-      fieldO.style.display = is2P ? '' : 'none';
-
-      // Update title & subtitle
-      namesTitle.textContent = is2P ? '👥 Player Names' : '🤖 Your Name';
-      namesSub.textContent = is2P
-        ? 'Enter names for both players'
-        : 'Enter your name to play against AI';
-
-      namesModal.classList.add('open');
-      setTimeout(() => inputNameX.focus(), 350);
-    }
-
-    function hideNamesModal() {
-      namesModal.classList.remove('open');
-    }
-
-    function handleStartGame() {
-      const oldX = state.playerNames.X;
-      const oldO = state.playerNames.O;
-
-      state.playerNames.X = inputNameX.value.trim() || 'Player X';
-      state.playerNames.O = inputNameO.value.trim() || 'Player O';
-      savePlayerNames();
-      updateScoreDisplay();
-
-      // Trigger highlight animation on changed names
-      if (state.playerNames.X !== oldX) {
-        nameLabelX.classList.remove('name-changed');
-        void nameLabelX.offsetWidth; // force reflow
-        nameLabelX.classList.add('name-changed');
-        setTimeout(() => nameLabelX.classList.remove('name-changed'), 800);
-      }
-      if (state.playerNames.O !== oldO) {
-        nameLabelO.classList.remove('name-changed');
-        void nameLabelO.offsetWidth; // force reflow
-        nameLabelO.classList.add('name-changed');
-        setTimeout(() => nameLabelO.classList.remove('name-changed'), 800);
-      }
-
-      hideNamesModal();
-      resetBoard();
-    }
-
-    // ---- WIN MODAL -----------------------------------------------------
-
-    function showWinModal(winner) {
-      const isX = winner === 'X';
-      resultIcon.textContent = '🏆';
-      resultTitle.textContent = `${state.playerNames[winner]} Wins!`;
-      resultTitle.style.color = isX ? 'var(--cyan)' : 'var(--pink)';
-      resultSub.textContent = isX ? '✕ — The future belongs to X!' : '◯ — Perfect circle of victory!';
-      winModal.classList.add('open');
-    }
-
-    function showDrawModal() {
-      resultIcon.textContent = '🤝';
-      resultTitle.textContent = "It's a Draw!";
-      resultTitle.style.color = 'var(--text-secondary)';
-      resultSub.textContent = 'A battle of equals — try again!';
-      winModal.classList.add('open');
-    }
-
-    function hideModal() {
-      winModal.classList.remove('open');
-    }
-
-    // ---- CONFETTI (Canvas-based) ---------------------------------------
-
-    const confettiCanvas = document.getElementById('confetti-canvas');
-    const ctx = confettiCanvas.getContext('2d');
-    let confettiPieces = [];
-    let confettiAnimId = null;
-
-    function resizeConfettiCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeConfettiCanvas);
-    resizeConfettiCanvas();
-
-    function startConfetti() {
-      const colors = ['#4285F4', '#8B5CF6', '#d946ef', '#60a5fa', '#34d399', '#f472b6', '#a78bfa'];
-      confettiPieces = [];
-      for (let i = 0; i < 120; i++) {
-        confettiPieces.push({
-          x: Math.random() * confettiCanvas.width,
-          y: Math.random() * confettiCanvas.height * -1 - 20,
-          w: 6 + Math.random() * 6,
-          h: 4 + Math.random() * 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          vx: (Math.random() - 0.5) * 3,
-          vy: 1.5 + Math.random() * 3,
-          rot: Math.random() * 360,
-          rotSpeed: (Math.random() - 0.5) * 6,
-          opacity: 0.9 + Math.random() * 0.1,
-        });
-      }
-      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
-      animateConfetti();
-    }
-
-    function animateConfetti() {
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      let alive = false;
-      for (const p of confettiPieces) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.05;
-        p.rot += p.rotSpeed;
-        p.opacity -= 0.002;
-        if (p.opacity <= 0) continue;
-        alive = true;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot * Math.PI / 180);
-        ctx.globalAlpha = Math.max(0, p.opacity);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-        ctx.restore();
-      }
-      if (alive) {
-        confettiAnimId = requestAnimationFrame(animateConfetti);
-      } else {
-        confettiAnimId = null;
-        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      }
-    }
-
-    function stopConfetti() {
-      if (confettiAnimId) {
-        cancelAnimationFrame(confettiAnimId);
-        confettiAnimId = null;
-      }
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-    }
-
-    // ---- AI LOGIC ------------------------------------------------------
-
-    /**
-     * Minimax algorithm — ensures the AI (playing as 'O') never loses.
-     * @param {string[]} board  Current board state
-     * @param {string} player   'X' (human) or 'O' (AI)
-     * @returns {number}        Score from AI's perspective
+     * Scores a position from the AI's (O) point of view. The algorithm itself is unchanged from the original.
+     * @returns {number} +10 AI wins, -10 X wins, 0 draw
      */
     function minimax(board, player) {
-      const result = checkWinner(board);
+      const result = findWinner(board);
       if (result) {
-        // AI wins
         if (result.winner === 'O') return 10;
-        // Human wins
         if (result.winner === 'X') return -10;
       }
       if (isBoardFull(board)) return 0;
@@ -1707,11 +1011,10 @@
       return best;
     }
 
-    /** Get best move index for AI using Minimax */
-    function getBestMove() {
+    /** Best move for the AI according to Minimax */
+    function getBestMove(board) {
       let bestScore = -Infinity;
       let bestMove = -1;
-      const board = [...state.board];
 
       for (let i = 0; i < 9; i++) {
         if (board[i] !== null) continue;
@@ -1726,387 +1029,734 @@
       return bestMove;
     }
 
-    /** AI move: Easy = random; Hard = Minimax-optimal */
-    function makeAIMove() {
-      if (state.gameOver) return;
-      if (state.currentPlayer !== 'O') return;
-      if (state.mode === '2p') return;
-
-      const empty = state.board
-        .map((v, i) => v === null ? i : null)
-        .filter(v => v !== null);
-
-      if (empty.length === 0) return;
-
-      let moveIndex;
-      if (state.mode === 'ai-easy') {
-        // Easy: pick a random empty cell
-        moveIndex = empty[Math.floor(Math.random() * empty.length)];
-      } else {
-        // Hard: use Minimax
-        moveIndex = getBestMove();
-      }
-
-      if (moveIndex === -1) return;
-      makeMove(moveIndex);
+    /** Hard AI = optimal minimax, Easy AI = random move */
+    function chooseAIMove(board, mode) {
+      if (mode === 'ai-hard') return getBestMove(board);
+      const open = emptyCells(board);
+      return open.length ? open[Math.floor(Math.random() * open.length)] : -1;
     }
 
-    // ---- CORE GAME ACTIONS ---------------------------------------------
+    // ===== UI / RENDER =====
 
-    /** Place a mark at the given cell index */
-    function makeMove(index) {
-      if (state.gameOver) return;
-      if (state.board[index] !== null) return;
+    const GHOST = '<svg class="ghost" viewBox="0 0 100 100" aria-hidden="true"><line class="gh-x" x1="20" y1="20" x2="80" y2="80"></line><line class="gh-x" x1="80" y1="20" x2="20" y2="80"></line><circle class="gh-o" cx="50" cy="50" r="30"></circle></svg>';
 
-      // Place the mark
+    const MARKS = {
+      X: '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><line x1="20" y1="20" x2="80" y2="80"></line><line x1="80" y1="20" x2="20" y2="80"></line></svg>',
+      O: '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="30"></circle></svg>',
+    };
+
+    const ROWS = ['Row 1', 'Row 2', 'Row 3'];
+    const COLS = ['column 1', 'column 2', 'column 3'];
+
+    const AWARDS = [
+      { key: 'first_win', name: 'First win', how: 'Win a single round.', done: 'Unlocked — the first round is in the bag.' },
+      { key: 'streak3', name: 'Three in a row', how: 'Win three rounds in a row.', done: 'Unlocked — three wins in a row.' },
+      { key: 'win_in_5', name: 'Five moves', how: 'Win within five moves.', done: 'Unlocked — finished in just five moves.' },
+      { key: 'draw_hard', name: 'Evenly matched', how: 'Draw against Hard AI.', done: 'Unlocked — Hard AI could not get past you.' },
+      { key: 'ten_wins', name: 'Ten', how: 'Collect ten wins.', done: 'Unlocked — ten wins collected.' },
+      { key: 'theme_hopper', name: 'Change of scenery', how: 'Try all three themes.', done: 'Unlocked — all three themes tried.' },
+    ];
+
+    const refs = {
+      board: document.getElementById('board'),
+      cells: Array.from(document.querySelectorAll('.cell')),
+      winline: document.getElementById('winline'),
+      winlineEl: document.getElementById('winlineEl'),
+      nameX: document.getElementById('nameX'),
+      nameO: document.getElementById('nameO'),
+      scoreX: document.getElementById('scoreX'),
+      scoreO: document.getElementById('scoreO'),
+      scoreDraw: document.getElementById('scoreDraw'),
+      scoreCells: Array.from(document.querySelectorAll('.score__cell')),
+      status: document.getElementById('status'),
+      sheet: document.getElementById('sheet'),
+      sheetTitle: document.getElementById('sheetTitle'),
+      sheetSub: document.getElementById('sheetSub'),
+      sheetStamp: document.getElementById('sheetStamp'),
+      sheetAward: document.getElementById('sheetAward'),
+      sheetAwardText: document.getElementById('sheetAwardText'),
+      btnSheetClose: document.getElementById('btnSheetClose'),
+      btnAgain: document.getElementById('btnAgain'),
+      btnNew: document.getElementById('btnNew'),
+      btnZero: document.getElementById('btnZero'),
+      modeBtns: Array.from(document.querySelectorAll('.seg__btn')),
+      themeInputs: Array.from(document.querySelectorAll('input[name="theme"]')),
+      soundToggle: document.getElementById('soundToggle'),
+      soundText: document.getElementById('soundText'),
+      btnShare: document.getElementById('btnShare'),
+      shareLabel: document.getElementById('shareLabel'),
+      awardsList: document.getElementById('awards'),
+      meja: document.getElementById('meja'),
+      mejaToggle: document.getElementById('mejaToggle'),
+      mejaClose: document.getElementById('mejaClose'),
+      scrim: document.getElementById('scrim'),
+    };
+
+    function cellLabel(i) {
+      const mark = state.board[i];
+      return `${ROWS[Math.floor(i / 3)]} ${COLS[i % 3]}, ${mark ? 'filled with ' + mark : 'empty'}`;
+    }
+
+    function renderBoard() {
+      refs.cells.forEach((cell, i) => {
+        const mark = state.board[i];
+        const shown = cell.dataset.mark || '';
+
+        if (mark && shown !== mark) {
+          cell.dataset.mark = mark;
+          cell.innerHTML = MARKS[mark];
+          cell.classList.add('is-taken');
+        } else if (!mark && shown !== '') {
+          cell.dataset.mark = '';
+          cell.innerHTML = GHOST;
+          cell.classList.remove('is-taken');
+        }
+
+        cell.classList.toggle('is-win', !!(state.winCombo && state.winCombo.includes(i)));
+        cell.setAttribute('aria-label', cellLabel(i));
+        cell.setAttribute('aria-disabled', state.gameOver || !!mark ? 'true' : 'false');
+      });
+
+      refs.board.dataset.turn = state.currentPlayer;
+      refs.board.classList.toggle('is-over', state.gameOver);
+    }
+
+    function renderScore() {
+      refs.scoreX.textContent = state.scores.X;
+      refs.scoreO.textContent = state.scores.O;
+      refs.scoreDraw.textContent = state.scores.draw;
+      refs.nameX.textContent = state.playerNames.X;
+      refs.nameO.textContent = state.playerNames.O;
+
+      const active = state.gameOver ? null : state.currentPlayer;
+      refs.scoreCells.forEach(cell => {
+        cell.classList.toggle('is-active', cell.dataset.side === active);
+      });
+    }
+
+    function renderStatus() {
+      if (state.gameOver) {
+        refs.status.textContent = state.winCombo ? 'Round over' : 'Round over — draw';
+        return;
+      }
+      if (state.mode === '2p') {
+        refs.status.textContent = `${state.playerNames[state.currentPlayer]} to play`;
+      } else {
+        refs.status.textContent = state.currentPlayer === 'X' ? 'Your turn' : 'Computer is thinking';
+      }
+    }
+
+    function renderAll() {
+      renderBoard();
+      renderScore();
+      renderStatus();
+    }
+
+    function renderAwards(fresh = []) {
+      Array.from(refs.awardsList.children).forEach(item => {
+        const key = item.dataset.key;
+        const copy = AWARDS.find(a => a.key === key);
+        const open = !!state.awards[key];
+        item.classList.toggle('is-open', open);
+        item.querySelector('.award__hint').textContent = open ? copy.done : copy.how;
+        if (fresh.includes(key)) {
+          item.classList.add('is-new');
+          setTimeout(() => item.classList.remove('is-new'), 500);
+        }
+      });
+    }
+
+    function buildAwards() {
+      refs.awardsList.innerHTML = AWARDS.map(a => `
+        <li class="award" data-key="${a.key}">
+          <svg class="award__mark" aria-hidden="true"><use href="#i-medal"></use></svg>
+          <span class="award__body">
+            <span class="award__name">${a.name}</span>
+            <span class="award__hint">${a.how}</span>
+          </span>
+        </li>`).join('');
+    }
+
+    const awards = {
+      check() {
+        const fresh = [];
+        const open = key => {
+          if (!state.awards[key]) {
+            state.awards[key] = true;
+            fresh.push(key);
+          }
+        };
+
+        if (state.scores.X + state.scores.O > 0) open('first_win');
+        if (state.scores.X + state.scores.O >= 10) open('ten_wins');
+        if (state.streak >= 3) open('streak3');
+        if (state.gameOver && state.winCombo && state.moveCount <= 5) open('win_in_5');
+        if (state.gameOver && !state.winCombo && state.mode === 'ai-hard') open('draw_hard');
+        if (state.themesTried.length >= 3) open('theme_hopper');
+
+        if (fresh.length) saveAwards();
+        return fresh;
+      },
+    };
+
+    function showWinLine(combo, winner) {
+      const point = i => ({
+        x: (i % 3) * (100 / 3) + 100 / 6,
+        y: Math.floor(i / 3) * (100 / 3) + 100 / 6,
+      });
+      const a = point(combo[0]);
+      const c = point(combo[2]);
+      // The stroke deliberately overshoots the centre of the marks a little, like a pen.
+      const ox = (a.x - c.x) * .07;
+      const oy = (a.y - c.y) * .07;
+
+      refs.winlineEl.setAttribute('x1', a.x + ox);
+      refs.winlineEl.setAttribute('y1', a.y + oy);
+      refs.winlineEl.setAttribute('x2', c.x - ox);
+      refs.winlineEl.setAttribute('y2', c.y - oy);
+
+      refs.winline.classList.remove('is-on', 'is-x', 'is-o');
+      void refs.winlineEl.getBoundingClientRect();
+      refs.winline.classList.add(winner === 'X' ? 'is-x' : 'is-o', 'is-on');
+    }
+
+    function clearWinLine() {
+      refs.winline.classList.remove('is-on', 'is-x', 'is-o');
+    }
+
+    function scheduleAI() {
+      if (state.gameOver || state.mode === '2p' || state.currentPlayer !== 'O') return;
+      clearTimeout(state.aiTimer);
+      // A 320–540ms pause so the AI's move does not feel instant.
+      const wait = 320 + Math.round(Math.random() * 220);
+      state.aiTimer = setTimeout(() => {
+        state.aiTimer = null;
+        if (state.gameOver || state.mode === '2p' || state.currentPlayer !== 'O') return;
+        const move = chooseAIMove(state.board, state.mode);
+        if (move >= 0) play(move);
+      }, wait);
+    }
+
+    /** Player clicks are refused while it is the AI's turn so the board cannot be "rigged". */
+    function handleCellClick(index) {
+      if (state.mode !== '2p' && state.currentPlayer === 'O') return;
+      play(index);
+    }
+
+    function play(index) {
+      if (state.gameOver || state.board[index] !== null) return;
+
       state.board[index] = state.currentPlayer;
       state.moveCount++;
-      sndClick();
-      renderBoard();
+      sfx('move');
 
-      // Check for win / draw
-      const result = checkWinner();
-      if (result) {
-        endGame(result.winner);
-        return;
-      }
-      if (isBoardFull()) {
-        endGame('draw');
-        return;
-      }
+      const found = findWinner(state.board);
+      if (found) { finishRound(found.winner, found.combo); return; }
+      if (isBoardFull(state.board)) { finishRound('draw', null); return; }
 
-      // Switch player
-      state.currentPlayer = state.currentPlayer === 'X' ? 'O' : 'X';
-      updateTurnIndicator();
+      state.currentPlayer = other(state.currentPlayer);
+      renderAll();
+      scheduleAI();
     }
 
-    /** Handle a human click on a cell */
-    function handleCellClick(e) {
-      const cell = e.currentTarget;
-      const idx = parseInt(cell.dataset.index);
+    function finishRound(result, combo) {
+      state.gameOver = true;
+      state.winCombo = combo;
+      clearTimeout(state.aiTimer);
+      state.aiTimer = null;
 
-      // Block if game over, cell taken, or AI's turn
-      if (state.gameOver) return;
-      if (state.board[idx] !== null) return;
-      if (state.mode !== '2p' && state.currentPlayer === 'O') return;
+      if (result === 'draw') {
+        state.scores.draw++;
+        state.streak = 0;
+        state.lastWinner = null;
+      } else {
+        state.scores[result]++;
+        state.streak = state.lastWinner === result ? state.streak + 1 : 1;
+        state.lastWinner = result;
+      }
 
-      makeMove(idx);
+      saveScores();
+      saveStats();
+      const fresh = awards.check();
+
+      renderAll();
+      renderAwards(fresh);
+      if (combo) showWinLine(combo, result);
+
+      queueSheet(result, fresh);
+      sfx(result === 'draw' ? 'draw' : 'win');
     }
 
-    // ---- RESET FUNCTIONS -----------------------------------------------
+    // ---- RESULT POPUP (opens once the win-line animation has finished) ----
 
-    /** Reset the board for a new game */
-    function resetBoard() {
-      // Clear any pending AI move
-      if (state.aiTimeoutId) {
-        clearTimeout(state.aiTimeoutId);
-        state.aiTimeoutId = null;
+    const SHEET_DELAY = 320;
+    let sheetReturnFocus = null;
+
+    function queueSheet(result, fresh) {
+      clearTimeout(state.sheetTimer);
+      state.sheetTimer = setTimeout(() => {
+        state.sheetTimer = null;
+        openSheet(result, fresh);
+      }, SHEET_DELAY);
+    }
+
+    function scoreLine() {
+      const { X, O, draw } = state.scores;
+      return `${state.playerNames.X} ${X} · Draw ${draw} · ${state.playerNames.O} ${O}`;
+    }
+
+    function openSheet(result, fresh) {
+      const isDraw = result === 'draw';
+
+      refs.sheetTitle.textContent = isDraw
+        ? (state.mode === 'ai-hard' ? 'Draw against Hard AI' : 'Draw. Well matched.')
+        : `${state.playerNames[result]} wins in ${state.moveCount} moves`;
+
+      refs.sheetSub.textContent = scoreLine();
+      refs.sheetSub.title = scoreLine();
+      refs.sheetStamp.className = 'sheet__stamp' + (isDraw ? '' : (result === 'X' ? ' is-x' : ' is-o'));
+
+      const latest = fresh && fresh.length ? AWARDS.find(a => a.key === fresh[0]) : null;
+      refs.sheetAwardText.textContent = latest ? `Achievement unlocked — ${latest.name}` : '';
+      refs.sheetAward.hidden = !latest;
+
+      sheetReturnFocus = document.activeElement;
+      refs.sheet.hidden = false;
+      refs.btnAgain.focus();
+    }
+
+    /** Closes the popup and returns focus to the board so keyboard flow is not broken. */
+    function closeSheet() {
+      clearTimeout(state.sheetTimer);
+      state.sheetTimer = null;
+      if (refs.sheet.hidden) return;
+
+      refs.sheet.hidden = true;
+      const back = sheetReturnFocus;
+      const target = back && back.isConnected && back !== document.body ? back : refs.cells[0];
+      target.focus();
+    }
+
+    function trapSheetFocus(event) {
+      if (event.key !== 'Tab') return;
+      const items = [refs.btnAgain, refs.btnSheetClose];
+      const index = items.indexOf(document.activeElement);
+      event.preventDefault();
+      if (index < 0) {
+        items[0].focus();
+        return;
       }
+      const step = event.shiftKey ? -1 : 1;
+      items[(index + step + items.length) % items.length].focus();
+    }
+
+    function resetRound() {
+      clearTimeout(state.aiTimer);
+      state.aiTimer = null;
+
       state.board = Array(9).fill(null);
       state.currentPlayer = 'X';
       state.gameOver = false;
       state.moveCount = 0;
       state.winCombo = null;
-      clearWinningLine();
-      hideModal();
-      stopConfetti();
-      renderBoard();
-      updateTurnIndicator();
-    }
 
-    /** Reset all scores */
-    function resetScores() {
-      state.scores = { X: 0, O: 0, draw: 0 };
-      saveScores();
-      updateScoreDisplay();
-      resetBoard();
-    }
+      closeSheet();
+      clearWinLine();
 
-    // ---- THEME SWITCH --------------------------------------------------
-
-    function loadTheme() {
-      try {
-        const saved = localStorage.getItem('tictactoe_theme');
-        if (saved && ['gemini','light','cyber','pastel','gold'].includes(saved)) {
-          state.theme = saved;
-        }
-      } catch (_) { /* ignore */ }
-    }
-
-    function saveTheme() {
-      try {
-        localStorage.setItem('tictactoe_theme', state.theme);
-      } catch (_) { /* ignore */ }
-    }
-
-    /** Apply the given theme: update body class, buttons, and particles */
-    function switchTheme(name) {
-      state.theme = name;
-      saveTheme();
-
-      // Update body class
-      document.body.className = document.body.className
-        .replace(/theme-\w+/g, '')
-        .trim();
-      document.body.classList.add('theme-' + name);
-
-      // Update button states
-      themeBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.theme === name);
+      refs.cells.forEach(cell => {
+        cell.dataset.mark = '';
+        cell.innerHTML = GHOST;
+        cell.classList.remove('is-taken', 'is-win');
       });
 
-      // Update particle colors to match theme
-      updateParticleColors();
+      renderAll();
     }
 
-    /** Return particle color palette matching current theme */
-    function getThemeColors() {
-      const palettes = {
-        gemini: ['#4285F4', '#8B5CF6', '#d946ef', '#60a5fa', '#c084fc'],
-        light:  ['#2563eb', '#7c3aed', '#6366f1', '#3b82f6', '#8b5cf6'],
-        cyber:  ['#00ff88', '#ff007f', '#ff00ff', '#00ffff', '#ffcc00'],
-        pastel: ['#7dd3fc', '#f9a8d4', '#c084fc', '#fbbf24', '#86efac'],
-        gold:   ['#fbbf24', '#f59e0b', '#9ca3af', '#eab308', '#d4d4d8'],
-      };
-      return palettes[state.theme] || palettes.gemini;
+    function zeroScores() {
+      state.scores = { X: 0, O: 0, draw: 0 };
+      state.streak = 0;
+      state.lastWinner = null;
+      saveScores();
+      saveStats();
+      resetRound();
     }
-
-    function updateParticleColors() {
-      const colors = getThemeColors();
-      for (const p of particles) {
-        p.color = colors[Math.floor(Math.random() * colors.length)];
-      }
-    }
-
-    // ---- MODE SWITCH ---------------------------------------------------
 
     function setMode(mode) {
       state.mode = mode;
-      modeBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
+      refs.modeBtns.forEach(btn => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.mode === mode));
       });
-      resetBoard();
+      normalizeAIName(mode);
+      saveMode();
+      resetRound();
     }
-
-    // ---- SHARE LINK ----------------------------------------------------
-
-    function shareScoreLink() {
-      syncScoreToURL(); // Ensure URL is up-to-date
-      const link = window.location.href;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(() => {
-          showToast('✅', 'Link copied!', 'Share with your friends!');
-        }).catch(() => {
-          fallbackCopy(link);
-        });
-      } else {
-        fallbackCopy(link);
-      }
-    }
-
-    function fallbackCopy(text) {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        showToast('✅', 'Link copied!', 'Share with your friends!');
-      } catch (_) {
-        showToast('⚠️', 'Copy failed', 'Please copy the URL manually');
-      }
-      document.body.removeChild(textarea);
-    }
-
-    function showToast(icon, title, sub) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerHTML = `
-        <span class="toast-icon">${icon}</span>
-        <span class="toast-text">
-          <span class="toast-title">${title}</span>
-          <span class="toast-sub">${sub}</span>
-        </span>
-      `;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.classList.add('out');
-        setTimeout(() => toast.remove(), 300);
-      }, 2200);
-    }
-
-    // ---- MUTE TOGGLE ---------------------------------------------------
-
-    function toggleMute() {
-      state.muted = !state.muted;
-      btnMute.textContent = state.muted ? '🔇' : '🔊';
-    }
-
-    // ---- PARTICLE BACKGROUND SYSTEM ------------------------------------
 
     /**
-     * Animated particle background with floating dots and connection lines.
-     * Particles drift slowly, and nearby particles are linked by thin glowing lines.
+     * The AI opponent defaults to "Computer"; if the player already renamed it, that name is kept.
+     * 'Komputer' and 'Computer' both count as "untouched" so saved names from the
+     * Indonesian version still normalise instead of being frozen mid-translation.
      */
-    const pCtx = particleCanvas.getContext('2d');
-    let particles = [];
-    let pAnimId = null;
-    const PARTICLE_COUNT = 70;
-    const MAX_DIST = 130; // max distance for connection lines
-    const COLORS = getThemeColors();
-
-    function resizeParticleCanvas() {
-      particleCanvas.width = window.innerWidth;
-      particleCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeParticleCanvas);
-    resizeParticleCanvas();
-
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push({
-          x: Math.random() * particleCanvas.width,
-          y: Math.random() * particleCanvas.height,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: (Math.random() - 0.5) * 0.6,
-          radius: 1.5 + Math.random() * 3,
-          color: COLORS[Math.floor(Math.random() * COLORS.length)],
-          opacity: 0.2 + Math.random() * 0.5,
-        });
+    function normalizeAIName(mode) {
+      const isAI = mode !== '2p';
+      const generic = ['O', 'Computer', 'Komputer'];
+      if (isAI && generic.includes(state.playerNames.O)) {
+        state.playerNames.O = 'Computer';
+        saveNames();
+      } else if (!isAI && state.playerNames.O === 'Computer') {
+        state.playerNames.O = 'O';
+        saveNames();
       }
     }
 
-    function animateParticles() {
-      // Compute line color from current theme once per frame
-      const themeHex = getThemeColors()[0];
-      const lineR = parseInt(themeHex.slice(1,3), 16);
-      const lineG = parseInt(themeHex.slice(3,5), 16);
-      const lineB = parseInt(themeHex.slice(5,7), 16);
+    function applyTheme(name) {
+      state.theme = name;
+      document.body.dataset.theme = name;
+      refs.themeInputs.forEach(input => { input.checked = input.value === name; });
+      saveTheme();
 
-      pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+      if (!state.themesTried.includes(name)) {
+        state.themesTried.push(name);
+        const fresh = awards.check();
+        renderAwards(fresh);
+      }
+    }
 
-      // Move & draw particles
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
+    function startNameEdit(side) {
+      const button = side === 'X' ? refs.nameX : refs.nameO;
+      if (!button.isConnected) return;   // already being edited
 
-        // Wrap around edges
-        if (p.x < -20) p.x = particleCanvas.width + 20;
-        if (p.x > particleCanvas.width + 20) p.x = -20;
-        if (p.y < -20) p.y = particleCanvas.height + 20;
-        if (p.y > particleCanvas.height + 20) p.y = -20;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'score__input';
+      input.maxLength = 15;
+      input.value = state.playerNames[side];
+      input.setAttribute('aria-label', 'Player name ' + side);
 
-        // Draw particle glow
-        const gradient = pCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 3);
-        gradient.addColorStop(0, p.color + '66'); // hex + 40% alpha
-        gradient.addColorStop(1, p.color + '00'); // transparent
-        pCtx.beginPath();
-        pCtx.arc(p.x, p.y, p.radius * 3, 0, Math.PI * 2);
-        pCtx.fillStyle = gradient;
-        pCtx.fill();
+      let settled = false;
+      const commit = () => {
+        if (settled) return;
+        settled = true;
+        state.playerNames[side] = input.value.trim() || (side === 'X' ? 'X' : 'O');
+        saveNames();
+        input.replaceWith(button);
+        renderScore();
+        renderStatus();
+      };
+      const cancel = () => {
+        if (settled) return;
+        settled = true;
+        input.replaceWith(button);
+      };
 
-        // Draw particle core
-        pCtx.beginPath();
-        pCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        pCtx.fillStyle = p.color;
-        pCtx.globalAlpha = p.opacity;
-        pCtx.fill();
-        pCtx.globalAlpha = 1;
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') { event.preventDefault(); commit(); }
+        else if (event.key === 'Escape') { event.preventDefault(); cancel(); }
+      });
+      input.addEventListener('blur', commit);
+
+      button.replaceWith(input);
+      input.focus();
+      input.select();
+    }
+
+    function openMeja() {
+      document.body.classList.add('meja-open');
+      refs.scrim.hidden = false;
+      refs.mejaToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMeja() {
+      document.body.classList.remove('meja-open');
+      refs.scrim.hidden = true;
+      refs.mejaToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    // ---- Audio: synthesised, quiet, and only on when asked ----
+    let audioCtx = null;
+
+    function sfx(kind) {
+      if (!state.sound) return;
+      if (kind === 'move') tone(186, .06, 'triangle', .05);
+      else if (kind === 'win') {
+        tone(392, .14, 'sine', .05);
+        setTimeout(() => tone(587, .22, 'sine', .05), 130);
+      } else {
+        tone(220, .16, 'triangle', .04);
+        setTimeout(() => tone(165, .22, 'triangle', .04), 170);
+      }
+    }
+
+    function tone(freq, duration, type, volume) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (_) { /* audio is a nicety; failures are ignored */ }
+    }
+
+    function shareLink() {
+      syncURL();
+      const link = location.href;
+      const original = refs.shareLabel.textContent;
+      let spoken = false;
+      const announce = () => {
+        if (spoken) return;
+        spoken = true;          refs.shareLabel.textContent = 'Link copied';
+        setTimeout(() => { refs.shareLabel.textContent = original; }, 1600);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(announce).catch(() => legacyCopy(link, announce));
+      } else {
+        legacyCopy(link, announce);
+      }
+    }
+
+    function legacyCopy(text, announce) {
+      const field = document.createElement('textarea');
+      field.value = text;
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.appendChild(field);
+      field.select();
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch (_) { copied = false; }
+      field.remove();
+
+      if (copied) announce();
+      else refs.shareLabel.textContent = 'Copy failed';
+    }
+
+    // ===== STORAGE =====
+
+    const KEY = { scores: 'ttt_scores', names: 'ttt_names', theme: 'ttt_theme', mode: 'ttt_mode', sound: 'ttt_sound', stats: 'ttt_stats', awards: 'ttt_awards' };
+    const OLD_KEY = { scores: 'tictactoe_scores', names: 'tictactoe_names', theme: 'tictactoe_theme' };
+    const THEME_MAP = { gemini: 'kertas', light: 'kertas', pastel: 'kertas', cyber: 'kapur', gold: 'kayu' };
+    const THEMES = ['kertas', 'kayu', 'kapur'];
+
+    function readRaw(key) {
+      try { return localStorage.getItem(key); } catch (_) { return null; }
+    }
+
+    function readJSON(key, fallback, oldKey) {
+      const raw = readRaw(key) ?? (oldKey ? readRaw(oldKey) : null);
+      if (!raw) return fallback;
+      try { return JSON.parse(raw); } catch (_) { return fallback; }
+    }
+
+    function writeJSON(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) { /* storage can be blocked */ }
+    }
+
+    function loadSaved() {
+      const scores = readJSON(KEY.scores, null, OLD_KEY.scores);
+      if (scores) {
+        state.scores.X = Number(scores.X) || 0;
+        state.scores.O = Number(scores.O) || 0;
+        state.scores.draw = Number(scores.draw) || 0;
       }
 
-      // Draw connection lines between nearby particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MAX_DIST) {
-            const alpha = (1 - dist / MAX_DIST) * 0.2;
-            pCtx.beginPath();
-            pCtx.moveTo(particles[i].x, particles[i].y);
-            pCtx.lineTo(particles[j].x, particles[j].y);
-            // line color computed once outside loops (see animateParticles top)
-            pCtx.strokeStyle = `rgba(${lineR}, ${lineG}, ${lineB}, ${alpha})`;
-            pCtx.lineWidth = 0.8;
-            pCtx.stroke();
-          }
+      const names = readJSON(KEY.names, null, OLD_KEY.names);
+      if (names) {
+        state.playerNames.X = (names.X || '').trim() || 'X';
+        state.playerNames.O = (names.O || '').trim() || 'O';
+      }
+
+      const themeRaw = readRaw(KEY.theme) ?? readRaw(OLD_KEY.theme);
+      if (themeRaw) {
+        let value;
+        try { value = JSON.parse(themeRaw); } catch (_) { value = themeRaw; }
+        if (THEME_MAP[value]) state.theme = THEME_MAP[value];
+        else if (THEMES.includes(value)) state.theme = value;
+      }
+
+      // An old default name is migrated so the UI never shows a stale language.
+      if (state.playerNames.O === 'Komputer') state.playerNames.O = 'Computer';
+
+      const mode = readJSON(KEY.mode, null);
+      if (mode === '2p' || mode === 'ai-easy' || mode === 'ai-hard') state.mode = mode;
+
+      state.sound = readJSON(KEY.sound, false) === true;
+
+      const stats = readJSON(KEY.stats, null);
+      if (stats) {
+        state.streak = Number(stats.streak) || 0;
+        state.lastWinner = stats.lastWinner || null;
+      }
+
+      const saved = readJSON(KEY.awards, null);
+      if (saved) {
+        state.awards = saved.awards || {};
+        state.themesTried = Array.isArray(saved.themes) ? saved.themes : [];
+      }
+    }
+
+    function loadFromURL() {
+      try {
+        const params = new URLSearchParams(location.search);
+        const keys = ['x', 'o', 'd', 'xn', 'on'];
+        if (!keys.some(key => params.has(key))) return;
+
+        if (params.has('x')) state.scores.X = parseInt(params.get('x'), 10) || 0;
+        if (params.has('o')) state.scores.O = parseInt(params.get('o'), 10) || 0;
+        if (params.has('d')) state.scores.draw = parseInt(params.get('d'), 10) || 0;
+        if (params.has('xn')) state.playerNames.X = (params.get('xn') || '').trim() || 'X';
+        if (params.has('on')) state.playerNames.O = (params.get('on') || '').trim() || 'O';
+
+        saveScores();
+        saveNames();
+        history.replaceState({}, '', location.href.split('?')[0]);
+      } catch (_) { /* a broken link is simply ignored */ }
+    }
+
+    function saveScores() {
+      writeJSON(KEY.scores, state.scores);
+      syncURL();
+    }
+
+    function saveNames() {
+      writeJSON(KEY.names, state.playerNames);
+      syncURL();
+    }
+
+    function saveTheme() { writeJSON(KEY.theme, state.theme); }
+    function saveMode() { writeJSON(KEY.mode, state.mode); }
+    function saveStats() { writeJSON(KEY.stats, { streak: state.streak, lastWinner: state.lastWinner }); }
+    function saveAwards() { writeJSON(KEY.awards, { awards: state.awards, themes: state.themesTried }); }
+
+    /** Scores and names ride along in the URL so the link can be shared. */
+    function syncURL() {
+      try {
+        const url = new URL(location.href);
+        const { X, O, draw } = state.scores;
+        const hasScore = X > 0 || O > 0 || draw > 0;
+        const customNames = state.playerNames.X !== 'X' || !['O', 'Computer', 'Komputer'].includes(state.playerNames.O);
+
+        if (hasScore) {
+          url.searchParams.set('x', X);
+          url.searchParams.set('o', O);
+          url.searchParams.set('d', draw);
+        } else {
+          ['x', 'o', 'd'].forEach(key => url.searchParams.delete(key));
         }
-      }
 
-      pAnimId = requestAnimationFrame(animateParticles);
+        if (customNames) {
+          url.searchParams.set('xn', state.playerNames.X);
+          url.searchParams.set('on', state.playerNames.O);
+        } else {
+          ['xn', 'on'].forEach(key => url.searchParams.delete(key));
+        }
+
+        history.replaceState({}, '', url.href);
+      } catch (_) { /* file:// or an odd URL: just skip */ }
     }
 
-    // ---- INITIALISATION ------------------------------------------------
+    // ===== INIT =====
+
+    function onBoardKey(event) {
+      const index = refs.cells.indexOf(event.target);
+      if (index < 0) return;
+
+      const row = Math.floor(index / 3);
+      const col = index % 3;
+      let next = null;
+
+      if (event.key === 'ArrowRight') next = row * 3 + Math.min(2, col + 1);
+      else if (event.key === 'ArrowLeft') next = row * 3 + Math.max(0, col - 1);
+      else if (event.key === 'ArrowDown') next = Math.min(2, row + 1) * 3 + col;
+      else if (event.key === 'ArrowUp') next = Math.max(0, row - 1) * 3 + col;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = 8;
+
+      if (next !== null) {
+        event.preventDefault();
+        refs.cells[next].focus();
+      }
+    }
+
+    function isTyping(target) {
+      return !!(target && target.closest && target.closest('input, textarea, [contenteditable]'));
+    }
 
     function init() {
-      loadScores();
-      loadPlayerNames();
-      updateScoreDisplay();
+      loadSaved();
+      loadFromURL();
 
-      // Cell click handlers
-      cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+      document.body.dataset.theme = state.theme;
+      refs.themeInputs.forEach(input => { input.checked = input.value === state.theme; });
+      refs.soundToggle.checked = state.sound;
+      refs.soundText.textContent = state.sound ? 'On' : 'Off';
+      refs.modeBtns.forEach(btn => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.mode === state.mode));
+      });
+      if (state.mode !== '2p') normalizeAIName(state.mode);
 
-      // Reset buttons
-      btnReset.addEventListener('click', resetBoard);
-      btnResetScore.addEventListener('click', resetScores);
+      buildAwards();
 
-      // Mute
-      btnMute.addEventListener('click', toggleMute);
+      refs.cells.forEach((cell, index) => {
+        cell.dataset.mark = '';
+        cell.innerHTML = GHOST;
+        cell.addEventListener('click', () => handleCellClick(index));
+      });
 
-      // Share link
-      btnShareLink.addEventListener('click', shareScoreLink);
+      refs.board.addEventListener('keydown', onBoardKey);
 
-      // Mode buttons
-      modeBtns.forEach(btn => {
+      refs.modeBtns.forEach(btn => {
         btn.addEventListener('click', () => setMode(btn.dataset.mode));
       });
 
-      // Theme buttons
-      themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => switchTheme(btn.dataset.theme));
+      refs.themeInputs.forEach(input => {
+        input.addEventListener('change', () => applyTheme(input.value));
       });
 
-      // Modal
-      document.getElementById('modalPlayAgain').addEventListener('click', resetBoard);
-      winModal.addEventListener('click', (e) => {
-        if (e.target === winModal) resetBoard();
+      refs.soundToggle.addEventListener('change', () => {
+        state.sound = refs.soundToggle.checked;
+        refs.soundText.textContent = state.sound ? 'On' : 'Off';
+        writeJSON(KEY.sound, state.sound);
+        sfx('move');
       });
 
-      // Keyboard shortcut: 'R' to reset
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'r' || e.key === 'R') resetBoard();
+      refs.btnNew.addEventListener('click', resetRound);
+      refs.btnAgain.addEventListener('click', resetRound);
+      refs.btnZero.addEventListener('click', zeroScores);
+      refs.btnShare.addEventListener('click', shareLink);
+      refs.nameX.addEventListener('click', () => startNameEdit('X'));
+      refs.nameO.addEventListener('click', () => startNameEdit('O'));
+
+      refs.mejaToggle.addEventListener('click', openMeja);
+      refs.mejaClose.addEventListener('click', closeMeja);
+      refs.scrim.addEventListener('click', closeMeja);
+
+      refs.btnSheetClose.addEventListener('click', () => closeSheet());
+      refs.sheet.addEventListener('click', event => {
+        if (event.target === refs.sheet) closeSheet();
+      });
+      refs.sheet.addEventListener('keydown', trapSheetFocus);
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          if (!refs.sheet.hidden) closeSheet();
+          else closeMeja();
+        }
+        if ((event.key === 'r' || event.key === 'R') && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target)) {
+          resetRound();
+        }
       });
 
-      // Set Names button
-      btnSetNames.addEventListener('click', showNamesModal);
-
-      // Names modal events
-      btnStartGame.addEventListener('click', handleStartGame);
-      document.getElementById('btnNamesClose').addEventListener('click', hideNamesModal);
-      inputNameX.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleStartGame(); });
-      inputNameO.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleStartGame(); });
-      namesModal.addEventListener('click', (e) => {
-        if (e.target === namesModal) hideNamesModal();
-      });
-
-      // Load saved theme & apply
-      loadTheme();
-      switchTheme(state.theme);
-
-      // Start particle background
-      initParticles();
-      animateParticles();
-
-      renderBoard();
-      updateTurnIndicator();
-
+      renderAll();
+      renderAwards();
+      closeMeja();
     }
 
-    // Start the game
     init();
   </script>
 </body>
