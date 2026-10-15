@@ -893,6 +893,11 @@
 
         <p class="note">Scores, names and themes are stored in this browser.</p>
       </aside>
+
+      <!-- Scrim must live INSIDE .page: .page has z-index:1, which traps the
+           drawer's z-index:30 inside its stacking context, while a body-level
+           scrim (z-index:20) would paint over the whole drawer and eat every click. -->
+      <div class="scrim" id="scrim" hidden></div>
     </main>
   </div>
 
@@ -912,8 +917,6 @@
       </div>
     </div>
   </div>
-
-  <div class="scrim" id="scrim" hidden></div>
 
   <svg class="sprite" aria-hidden="true" focusable="false">
     <symbol id="i-share" viewBox="0 0 24 24">
